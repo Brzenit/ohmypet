@@ -1,0 +1,101 @@
+.texto-imagem {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 5vw, 64px);
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.texto-imagem h2 {
+  font-size: clamp(28px, 3.6vw, 46px);
+  margin-bottom: 14px;
+}
+.texto-imagem p {
+  font-size: clamp(16px, 1.4vw, 19px);
+  font-weight: 600;
+  line-height: 1.55;
+  margin: 0 0 14px;
+}
+.texto-imagem .btn {
+  margin-top: 10px;
+}
+.texto-imagem-foto img {
+  width: 100%;
+  border-radius: 24px;
+  box-shadow: 10px 10px 0 var(--lavanda);
+  transition: transform 0.35s var(--mola);
+}
+.texto-imagem-foto:hover img {
+  transform: rotate(-1.5deg) scale(1.02);
+}
+.selo-redondo img {
+  max-width: 340px;
+  margin: 0 auto;
+  border-radius: 50%;
+  box-shadow: none;
+}
+
+.faixa-lavanda {
+  background: var(--lavanda);
+}
+.faixa-lavanda h2 {
+  color: var(--baunilha);
+}
+.tres-colunas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  max-width: 1160px;
+  margin: 36px auto 0;
+}
+.coluna {
+  padding: 24px;
+  height: 100%;
+  transition: transform 0.25s var(--mola);
+}
+.coluna:hover {
+  transform: translateY(-6px) rotate(-1deg);
+}
+.coluna h3 {
+  font-size: 24px;
+  margin: 10px 0 8px;
+}
+.coluna p {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.coluna-numero {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--amarelo);
+  border: 2px solid var(--roxo);
+}
+
+.chamada-final {
+  text-align: center;
+}
+.chamada-final p {
+  font-weight: 700;
+  font-size: 18px;
+  max-width: 620px;
+  margin: 14px auto 24px;
+  line-height: 1.5;
+}
+.nao-encontrada h1 {
+  font-size: clamp(30px, 5vw, 56px);
+}
+.nao-encontrada-pet {
+  max-width: 260px;
+  margin: 0 auto 8px;
+}
+
+@media (max-width: 800px) {
+  .texto-imagem,
+  .tres-colunas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

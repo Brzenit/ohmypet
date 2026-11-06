@@ -1,0 +1,346 @@
+@font-face {
+  font-family: 'Titan One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/titan-one.ttf') format('truetype');
+}
+
+:root {
+  --roxo: #5813ad;
+  --violeta: #b74ff9;
+  --amarelo: #ffff7b;
+  --rosa: #ff7af6;
+  --lavanda: #907aff;
+  --baunilha: #ffffee;
+  --erro: #c4145a;
+  --titulo: 'Titan One', 'Nunito', sans-serif;
+  --texto: 'Nunito', system-ui, sans-serif;
+  --gutter: clamp(16px, 5vw, 80px);
+  --header-h: 78px;
+  --mola: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 16px);
+}
+body {
+  margin: 0;
+  background: var(--baunilha);
+  color: var(--roxo);
+  font-family: var(--texto);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+}
+:focus-visible {
+  outline: 3px solid var(--lavanda);
+  outline-offset: 3px;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--titulo);
+  font-weight: 400;
+  margin: 0;
+}
+h2.titulo {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: clamp(28px, 4.2vw, 52px);
+  line-height: 1.1;
+}
+
+section.bloco {
+  padding: 72px var(--gutter);
+}
+
+/* Botões */
+.btn {
+  display: inline-block;
+  background: var(--rosa);
+  color: var(--roxo);
+  font-family: var(--titulo);
+  font-size: 20px;
+  line-height: 1.2;
+  text-align: center;
+  border-radius: 99px;
+  padding: 0.55em 1.3em;
+  margin-right: 7px;
+  box-shadow: 7px 0 0 var(--roxo);
+  transition: transform 0.2s var(--mola), box-shadow 0.2s, background 0.2s;
+}
+.btn:hover {
+  transform: translateX(-2px) scale(1.04) rotate(-1deg);
+  box-shadow: 9px 2px 0 var(--roxo);
+}
+.btn:active {
+  transform: scale(0.96);
+  box-shadow: 3px 0 0 var(--roxo);
+}
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: wait;
+}
+.btn.secundario {
+  background: var(--baunilha);
+  box-shadow: none;
+  border: 3px solid var(--roxo);
+  margin-right: 0;
+  padding: 0.45em 1.2em;
+}
+.btn.secundario:hover {
+  background: var(--amarelo);
+  box-shadow: none;
+}
+.btn.amarelo {
+  background: var(--amarelo);
+}
+.btn.bater {
+  animation: bater 2.6s ease-in-out infinite;
+}
+@keyframes bater {
+  0%, 86%, 100% { transform: none; }
+  90% { transform: scale(1.07) rotate(-2deg); }
+  94% { transform: scale(1.03) rotate(2deg); }
+}
+
+/* Formulários */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 15px;
+}
+.campo input,
+.campo select,
+.campo textarea {
+  font: 600 16px var(--texto);
+  color: var(--roxo);
+  background: #fff;
+  border: 2px solid var(--roxo);
+  border-radius: 14px;
+  padding: 12px 14px;
+  width: 100%;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  box-shadow: 4px 4px 0 var(--lavanda);
+  transform: translate(-1px, -1px);
+}
+.campo input::placeholder,
+.campo textarea::placeholder {
+  color: #9a84c6;
+}
+.campo [aria-invalid='true'] {
+  border-color: var(--erro);
+}
+.campo .erro,
+.erro-geral {
+  color: var(--erro);
+  font-weight: 800;
+  font-size: 14px;
+}
+.segmentado {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.segmentado button {
+  flex: 1 1 0;
+  min-width: max-content;
+  min-height: 46px;
+  padding: 8px 14px;
+  font-weight: 800;
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  background: #fff;
+  transition: background 0.2s, transform 0.2s var(--mola), color 0.2s;
+}
+.segmentado button:hover {
+  transform: translateY(-2px);
+}
+.segmentado button[aria-pressed='true'] {
+  background: var(--roxo);
+  color: var(--baunilha);
+}
+
+.cobranca {
+  color: var(--roxo);
+  max-width: 420px;
+}
+
+/* Cartão estilo sticker */
+.cartao {
+  background: var(--baunilha);
+  border: 2px solid var(--roxo);
+  border-radius: 18px;
+  box-shadow: 8px 8px 0 var(--roxo);
+}
+
+/* Cabeçalho de páginas internas */
+.pagina-topo {
+  position: relative;
+  overflow: hidden;
+  background: var(--violeta);
+  color: var(--amarelo);
+  text-align: center;
+  padding: clamp(44px, 7vw, 88px) var(--gutter);
+}
+.pagina-topo h1 {
+  font-size: clamp(34px, 6vw, 72px);
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.pagina-topo p {
+  color: var(--baunilha);
+  font-weight: 700;
+  font-size: clamp(16px, 1.7vw, 21px);
+  max-width: 720px;
+  margin: 14px auto 0;
+  line-height: 1.45;
+}
+.pagina-topo > * {
+  position: relative;
+}
+.pagina-topo .patas {
+  position: absolute;
+}
+
+/* Revelar ao rolar */
+.reveal {
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.75s var(--mola);
+  transition-delay: var(--delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal.up { transform: translateY(44px); }
+.reveal.left { transform: translateX(-60px); }
+.reveal.right { transform: translateX(60px); }
+.reveal.pop { transform: scale(0.72) rotate(-4deg); }
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Transição entre páginas */
+.pagina {
+  animation: entrar 0.45s ease both;
+}
+@keyframes entrar {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+/* Patas de fundo */
+.patas {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.patas svg {
+  position: absolute;
+  animation: flutuar 7s ease-in-out infinite;
+  fill: currentColor;
+}
+@keyframes flutuar {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-16px) rotate(calc(var(--r, 0deg) + 8deg)); }
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  translate: -50% 30px;
+  background: var(--roxo);
+  color: var(--baunilha);
+  padding: 12px 22px;
+  border-radius: 99px;
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, translate 0.3s var(--mola);
+  z-index: 60;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+.toast.visivel {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+/* Confete de patinhas */
+.confete {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 70;
+}
+.confete svg {
+  position: absolute;
+  top: -40px;
+  animation: cair var(--t, 2s) cubic-bezier(0.3, 0.6, 0.6, 1) var(--d, 0s) both;
+}
+@keyframes cair {
+  to { transform: translateY(110vh) rotate(var(--r, 360deg)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+  .confete {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .pagina-topo .patas,
+  .conceito .patas,
+  .chamada-pet .patas {
+    opacity: 0.3;
+  }
+  section.bloco {
+    padding-top: 52px;
+    padding-bottom: 52px;
+  }
+  :root {
+    --header-h: 62px;
+  }
+}

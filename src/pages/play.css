@@ -1,0 +1,422 @@
+/* Escolha do pet */
+.jogo-escolha {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.jogo-escolha h2 {
+  font-size: clamp(24px, 3.2vw, 38px);
+  margin-bottom: 24px;
+}
+.jogo-escolha .escolhas-pets {
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 170px));
+}
+.jogo-escolha .escolha-pet small {
+  display: block;
+  font-size: 12px;
+}
+.jogo-escolha .escolha-pet:hover {
+  background: var(--amarelo);
+}
+.jogo-convite {
+  font-weight: 700;
+  margin-top: 24px;
+}
+.jogo-convite a {
+  text-decoration: underline;
+  font-weight: 900;
+}
+
+/* Jogo */
+.jogo {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px var(--gutter) 56px;
+}
+.jogo-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.jogo-topo-direita {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.jogo-som {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--roxo);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--roxo);
+  transition: background 0.2s;
+}
+.jogo-som[aria-pressed='true'] {
+  background: var(--amarelo);
+}
+.jogo-sair {
+  font-weight: 800;
+  min-height: 44px;
+  padding: 0;
+}
+.jogo-sair:hover {
+  text-decoration: underline;
+}
+.jogo-placar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--amarelo);
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  padding: 5px 16px;
+  font: 400 18px var(--titulo);
+}
+.jogo-placar b {
+  font-weight: 400;
+  animation: contar 0.45s var(--mola);
+}
+@keyframes contar {
+  from { transform: scale(1.7); }
+}
+.jogo-barra {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  padding: 0;
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+.jogo-barra li {
+  position: relative;
+  overflow: hidden;
+  padding: 7px 2px;
+  border-radius: 99px;
+  background: #eee6fb;
+  transition: background 0.3s, color 0.3s;
+}
+.jogo-barra li span {
+  position: relative;
+  z-index: 1;
+}
+.jogo-barra li.feito {
+  background: var(--lavanda);
+  color: var(--baunilha);
+}
+.jogo-barra li.atual {
+  outline: 2px solid var(--roxo);
+  outline-offset: -2px;
+}
+.jogo-barra li i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: var(--rosa);
+}
+.jogo-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* Palco */
+.jogo-palco {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 20px;
+  border: 3px solid var(--roxo);
+  padding: 30px 14px 50px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.jogo-palco.com-ferramenta {
+  touch-action: none;
+  cursor: none;
+}
+.jogo-palco:not(.com-ferramenta) .jogo-pet {
+  cursor: pointer;
+}
+.jogo-cena {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.jogo-cena.ativa {
+  opacity: 1;
+}
+.jogo-pet {
+  position: relative;
+  aspect-ratio: 420 / 530;
+  width: min(100%, calc(60vh * 420 / 530));
+  margin: 0 auto;
+}
+.jogo-pet-salto,
+.jogo-pet-corpo {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 88%;
+}
+.jogo-pet .pet-cabeca {
+  animation: none;
+  transform: rotate(var(--cabeca-giro, 0deg));
+}
+.jogo-sujeira,
+.jogo-banheira {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.jogo-sujeira {
+  /* Cobre só o pet, já que usa as mesmas coordenadas do desenho. */
+  display: block;
+}
+.jogo-banheira {
+  overflow: visible;
+  transition: transform 0.5s cubic-bezier(0.5, 0, 0.7, 0.3), opacity 0.35s;
+}
+.jogo-banheira.fora {
+  transform: translateY(45%);
+  opacity: 0;
+}
+.jogo-fx {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.jogo-ferramenta {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: clamp(92px, 26%, 150px);
+  pointer-events: none;
+  will-change: transform;
+}
+.jogo-ferramenta svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  animation: entrar-ferramenta 0.35s var(--mola);
+}
+@keyframes entrar-ferramenta {
+  from { scale: 0.3; rotate: -30deg; }
+}
+.jogo-ferramenta.guardada {
+  display: none;
+}
+.chuveiro-furos circle {
+  transition: fill 0.15s;
+}
+.ligada .chuveiro-furos circle {
+  fill: #7cd8ff;
+}
+.secador-bico {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.ligada .secador-bico {
+  opacity: 1;
+}
+.secador-helice {
+  transform-origin: 44px 0;
+}
+.ligada .secador-helice {
+  animation: helice 0.16s linear infinite;
+}
+@keyframes helice {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ligada .secador-helice {
+    animation: none;
+  }
+}
+.jogo-palco .plaquinha {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  translate: -50% 0;
+  background: var(--amarelo);
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  padding: 3px 18px;
+  font: 400 18px var(--titulo);
+  white-space: nowrap;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.jogo-vibra {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  translate: -50% 0;
+  background: var(--roxo);
+  color: var(--amarelo);
+  font: 400 clamp(15px, 2vw, 20px) var(--titulo);
+  padding: 6px 18px;
+  border-radius: 99px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: vibrar 1.5s var(--mola) both;
+}
+@keyframes vibrar {
+  0% { opacity: 0; transform: translateY(-16px) scale(0.6); }
+  15% { opacity: 1; transform: none; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+/* Painel */
+.jogo-painel {
+  padding: clamp(16px, 2.4vw, 26px);
+}
+.jogo-painel h1 {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.1;
+  animation: entrar 0.3s ease both;
+}
+.jogo-painel > p {
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.4;
+  margin: 8px 0 16px;
+  min-height: 2.8em;
+}
+.jogo-progresso {
+  height: 18px;
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  overflow: hidden;
+  background: #fff;
+}
+.jogo-progresso i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--rosa);
+}
+.jogo-ajuda {
+  margin-top: 14px;
+  min-height: 44px;
+  padding: 0;
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.jogo-painel .opcoes {
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 10px;
+}
+.jogo-painel .opcao .pet {
+  max-width: 64px;
+}
+.jogo-concluir {
+  display: block;
+  width: calc(100% - 7px);
+  margin-top: 18px;
+}
+
+/* Fim */
+.jogo-fim-cartao {
+  position: relative;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 44px);
+  text-align: center;
+  animation: etapa-acesso 0.5s var(--mola) both;
+}
+.jogo-carimbo {
+  display: inline-block;
+  background: var(--rosa);
+  font: 400 15px var(--titulo);
+  padding: 5px 16px;
+  border-radius: 99px;
+  rotate: -3deg;
+  margin-bottom: 12px;
+}
+.jogo-fim-pet {
+  max-width: 250px;
+  margin: 0 auto 8px;
+}
+.jogo-fim-cartao h1 {
+  font-size: clamp(26px, 3.6vw, 40px);
+  line-height: 1.1;
+}
+.jogo-fim-cartao p {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 10px 0 22px;
+}
+.jogo-fim-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.jogo-fim-link {
+  display: inline-block;
+  margin-top: 18px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 800px) {
+  .jogo {
+    padding-top: 8px;
+  }
+  .jogo-grade {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .jogo-pet {
+    width: min(100%, calc(42vh * 420 / 530));
+  }
+  .jogo-palco {
+    padding: 22px 8px 44px;
+  }
+  .jogo-painel > p {
+    min-height: 0;
+  }
+  /* Na escolha do visual o pet fica à vista enquanto a pessoa rola pelos acessórios. */
+  .jogo-palco:not(.com-ferramenta) {
+    position: sticky;
+    top: calc(var(--header-h) + 6px);
+    z-index: 2;
+  }
+  .jogo-palco:not(.com-ferramenta) .jogo-pet {
+    width: min(100%, calc(28vh * 420 / 530));
+  }
+}
+@media (max-width: 480px) {
+  .jogo-barra {
+    gap: 4px;
+    font-size: 0;
+  }
+  .jogo-barra li {
+    padding: 0;
+    height: 12px;
+  }
+}

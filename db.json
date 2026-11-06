@@ -1,0 +1,210 @@
+{
+  "users": [
+    {
+      "name": "Bryan",
+      "email": "bryan@email.com",
+      "password": "senha123",
+      "id": 1
+    },
+    {
+      "name": "Bea",
+      "email": "beatrizleite0206@gmail.com",
+      "password": "1234567",
+      "id": 2
+    },
+    {
+      "name": "Uiui",
+      "email": "uiui@gmail.com",
+      "password": "oparel",
+      "id": 3
+    },
+    {
+      "name": "Aryane Rezende",
+      "email": "aryanerezende13@gmail.com",
+      "password": "asosoésapatona",
+      "id": 4
+    }
+  ],
+  "pets": [
+    {
+      "name": "Bob",
+      "species": "dog",
+      "breed": "Vira",
+      "age": "Adulto",
+      "size": "Médio",
+      "allergies": "",
+      "userId": 1,
+      "look": {
+        "fur": "caramelo",
+        "pattern": "lisa",
+        "type": "caida",
+        "accessories": [
+          "festa",
+          "bandana"
+        ]
+      },
+      "id": 1
+    },
+    {
+      "name": "Mingau",
+      "species": "cat",
+      "breed": "Gato",
+      "age": "Idoso",
+      "size": "Pequeno",
+      "allergies": "",
+      "userId": 1,
+      "look": {
+        "fur": "preto",
+        "pattern": "pintas",
+        "type": "dobrada",
+        "accessories": [
+          "laco",
+          "gravata"
+        ]
+      },
+      "id": 2
+    },
+    {
+      "name": "Bolota",
+      "species": "cat",
+      "breed": "Vira lata",
+      "age": "Adulto",
+      "size": "Médio",
+      "allergies": "",
+      "userId": 2,
+      "look": {
+        "fur": "preto",
+        "pattern": "mancha",
+        "type": "peludo",
+        "accessories": [
+          "oculos",
+          "coleira"
+        ]
+      },
+      "id": 3
+    },
+    {
+      "name": "Uiui",
+      "species": "dog",
+      "breed": "Shitzu",
+      "age": "Idoso",
+      "size": "Pequeno",
+      "allergies": "",
+      "userId": 3,
+      "look": {
+        "fur": "chocolate",
+        "pattern": "listras",
+        "type": "poodle",
+        "accessories": [
+          "oculos",
+          "gravata"
+        ]
+      },
+      "id": 4
+    },
+    {
+      "name": "Memel",
+      "species": "dog",
+      "breed": "Bordecollie",
+      "age": "Idoso",
+      "size": "Médio",
+      "allergies": "",
+      "userId": 4,
+      "look": {
+        "fur": "baunilha",
+        "pattern": "mancha",
+        "type": "caida",
+        "accessories": [
+          "bandana"
+        ]
+      },
+      "id": 5
+    },
+    {
+      "name": "Nega",
+      "species": "dog",
+      "breed": "Vira-lata",
+      "age": "Idoso",
+      "size": "Médio",
+      "allergies": "",
+      "userId": 3,
+      "look": {
+        "fur": "chocolate",
+        "pattern": "lisa",
+        "type": "caida",
+        "accessories": [
+          "oculos"
+        ]
+      },
+      "id": 6
+    },
+    {
+      "name": "Maia",
+      "species": "cat",
+      "breed": "Vira-lata",
+      "age": "Adulto",
+      "size": "Médio",
+      "allergies": "",
+      "userId": 3,
+      "look": {
+        "fur": "preto",
+        "pattern": "lisa",
+        "type": "pontuda",
+        "accessories": []
+      },
+      "id": 7
+    }
+  ],
+  "subscriptions": [
+    {
+      "userId": 1,
+      "petId": 2,
+      "planId": "trimestral",
+      "status": "ativa",
+      "createdAt": "2026-11-03T22:26:54.617Z",
+      "id": 1
+    },
+    {
+      "userId": 1,
+      "petId": 1,
+      "planId": "trimestral",
+      "status": "cancelada",
+      "createdAt": "2026-11-03T22:27:11.151Z",
+      "id": 2
+    },
+    {
+      "userId": 2,
+      "petId": 3,
+      "planId": "trimestral",
+      "status": "ativa",
+      "createdAt": "2026-11-03T22:30:41.007Z",
+      "id": 3
+    },
+    {
+      "userId": 3,
+      "petId": 4,
+      "planId": "anual",
+      "status": "ativa",
+      "createdAt": "2026-11-03T22:33:03.750Z",
+      "id": 4
+    },
+    {
+      "userId": 4,
+      "petId": 5,
+      "planId": "trimestral",
+      "status": "ativa",
+      "createdAt": "2026-11-03T22:36:18.789Z",
+      "id": 5
+    },
+    {
+      "userId": 1,
+      "petId": 1,
+      "planId": "luxe",
+      "billing": "anual",
+      "status": "ativa",
+      "createdAt": "2026-11-06T22:34:27.171Z",
+      "id": 6
+    }
+  ],
+  "newsletter": []
+}
