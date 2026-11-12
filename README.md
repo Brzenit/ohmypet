@@ -41,3 +41,11 @@ Outros comandos: `npm run build` (checa os tipos e gera o `dist/`) e `npm run ty
 - A assinatura não tem pagamento.
 - O texto de `/ongs` e parte de `/quem-somos` é lorem ipsum (`src/data/content.ts`).
 - Os links do rodapé sem página ainda mostram o aviso "em produção".
+
+### E-mail de confirmação personalizado
+
+O modelo fica em `supabase/templates/confirmacao.html`, e as imagens dele em `public/email/` (precisam estar publicadas).
+
+1. No Supabase, abra Authentication > Email Templates > Confirm signup.
+2. Em Subject, use: `Falta só um passinho! Confirme sua conta 🐾`
+3. Cole o conteúdo do arquivo no corpo (aba de código) e salve.
