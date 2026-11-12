@@ -2,7 +2,7 @@
 
 Protótipo do site do clube de assinatura pet: home animada, criador de pet, conta e assinatura simulada.
 
-Feito com Vite, React, TypeScript e React Router. Os dados ficam no `db.json`, servido pelo json-server.
+Feito com Vite, React, TypeScript e React Router. Contas, pets e assinaturas ficam no [Supabase](https://supabase.com).
 
 ## Rodar
 
@@ -14,7 +14,14 @@ npm install
 npm run dev
 ```
 
-O site abre em http://localhost:5173 e a API em http://localhost:3001. O Vite encaminha `/api` para a API.
+O site abre em http://localhost:5173.
+
+## Supabase
+
+1. Rode `supabase/migrations/0001_oh_my_pet.sql` no SQL Editor do projeto. Ele cria as tabelas e as regras que deixam cada pessoa ver só os próprios dados.
+2. Copie `.env.example` para `.env` e preencha a URL e a chave publicável (Project Settings > API).
+3. No Cloudflare (Workers & Pages > ohmypet), cadastre as mesmas duas variáveis em Settings > Build > Variables and secrets e publique de novo. Elas precisam existir na hora do build, porque o Vite grava os valores no site.
+4. Em Authentication > URL Configuration, coloque `https://ohmypet.ohmypet.workers.dev` em Site URL e adicione `http://localhost:5173/**` em Redirect URLs, para o link de confirmação de e-mail voltar para o site.
 
 Outros comandos: `npm run build` (checa os tipos e gera o `dist/`) e `npm run typecheck`.
 
@@ -31,8 +38,6 @@ Outros comandos: `npm run build` (checa os tipos e gera o `dist/`) e `npm run ty
 
 ## Limites do protótipo
 
-- As senhas ficam em texto puro no `db.json` e a sessão é só um id no `localStorage`. Não use senhas reais nem publique assim.
 - A assinatura não tem pagamento.
 - O texto de `/ongs` e parte de `/quem-somos` é lorem ipsum (`src/data/content.ts`).
 - Os links do rodapé sem página ainda mostram o aviso "em produção".
-- Para zerar os dados, deixe as listas vazias no `db.json`.

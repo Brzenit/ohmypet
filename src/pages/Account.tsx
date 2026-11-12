@@ -34,7 +34,7 @@ export function Account() {
     try {
       await api.deletePet(pet.id)
       setPets((list) => list?.filter((p) => p.id !== pet.id) ?? null)
-      // O json-server apaga junto as assinaturas ligadas ao pet.
+      // O banco apaga junto as assinaturas ligadas ao pet.
       setSubs((list) => list.filter((s) => s.petId !== pet.id))
       toast(`${pet.name} foi removido.`)
     } catch (err) {
@@ -136,8 +136,8 @@ export function Account() {
         </ul>
         <button
           className="btn secundario sair"
-          onClick={() => {
-            logout()
+          onClick={async () => {
+            await logout()
             // Recarrega na home: navegar pelo router perderia para o redirecionamento de RequireAuth.
             window.location.assign('/')
           }}

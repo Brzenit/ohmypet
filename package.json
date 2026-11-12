@@ -4,13 +4,13 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n site,api -c magenta,yellow \"vite\" \"npm:api\"",
-    "api": "json-server --watch db.json --port 3001",
+    "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.5"
@@ -19,8 +19,6 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.2.1",
-    "concurrently": "^10.0.6",
-    "json-server": "^0.17.4",
     "typescript": "^7.0.2",
     "vite": "^8.3.5"
   }

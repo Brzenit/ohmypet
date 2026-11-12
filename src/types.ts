@@ -3,10 +3,10 @@ export type PlanId = 'mini' | 'wow' | 'luxe'
 export type Billing = 'mensal' | 'anual'
 
 export interface User {
-  id: number
+  /** Id da conta no Auth do Supabase. */
+  id: string
   name: string
   email: string
-  password: string
 }
 
 export interface PetLook {
@@ -27,13 +27,13 @@ export interface PetProfile {
 
 export interface Pet extends PetProfile {
   id: number
-  userId: number
+  userId: string
   look: PetLook
 }
 
 export interface Subscription {
   id: number
-  userId: number
+  userId: string
   petId: number
   // Assinaturas antigas guardam 'mensal', 'trimestral' ou 'anual' aqui e não têm billing.
   planId: string

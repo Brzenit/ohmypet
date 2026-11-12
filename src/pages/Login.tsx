@@ -17,6 +17,7 @@ export function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [sentTo, setSentTo] = useState('')
 
   useEffect(() => {
     if (user) navigate(next, { replace: true })
@@ -32,7 +33,7 @@ export function Login() {
     setBusy(true)
     try {
       if (mode === 'entrar') await login(email, password)
-      else await register(name, email, password)
+      else if (await register(name, email, password)) setSentTo(email.trim().toLowerCase())
     } catch (err) {
       setError((err as Error).message)
     } finally {
@@ -51,6 +52,14 @@ export function Login() {
         <h1 key={mode}>
           <Paw size={30} /> {mode === 'entrar' ? 'Que bom te ver!' : 'Bem-vindo ao clube!'}
         </h1>
+        {sentTo ? (
+          <div className="acesso-enviado" role="status">
+            <p>
+              Enviamos um link de confirmação para <b>{sentTo}</b>. Abra o e-mail, clique no link e depois entre com sua senha.
+            </p>
+            <button className="btn" onClick={() => { setSentTo(''); setMode('entrar') }}>JÁ CONFIRMEI</button>
+          </div>
+        ) : (
         <form onSubmit={submit}>
           {mode === 'cadastrar' && (
             <label className="campo">
@@ -77,7 +86,7 @@ export function Login() {
             {busy ? 'AGUARDE...' : mode === 'entrar' ? 'ENTRAR' : 'CRIAR CONTA'}
           </button>
         </form>
-        <p className="aviso-prototipo">Protótipo: a senha fica salva sem proteção. Não use uma senha real.</p>
+        )}
       </div>
     </section>
   )
