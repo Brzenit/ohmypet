@@ -1,7 +1,7 @@
 import type { AuthError, User as AuthUser } from '@supabase/supabase-js'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { User } from '../types'
-import { authLinkError, supabase, supabaseReady } from './supabase'
+import { authLinkError, GOOGLE_FLAG, supabase, supabaseReady, type LinkError } from './supabase'
 
 interface AuthValue {
   user: User | null
@@ -12,8 +12,10 @@ interface AuthValue {
   logout: () => Promise<void>
   /** Manda de novo o link de confirmação para uma conta ainda não confirmada. */
   resendConfirmation: (email: string) => Promise<void>
-  /** Erro vindo de um link de e-mail aberto agora (vencido, já usado...). */
-  linkError: string | null
+  /** Leva para o Google; depois do login a pessoa volta para `next`. */
+  loginWithGoogle: (next: string) => Promise<void>
+  /** Erro vindo de um link de e-mail (vencido, já usado...) ou da volta do Google. */
+  linkError: LinkError | null
   clearLinkError: () => void
 }
 
@@ -95,9 +97,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const clearLinkError = useCallback(() => setLinkError(null), [])
 
+  const loginWithGoogle = useCallback(async (next: string) => {
+    try {
+      sessionStorage.setItem(GOOGLE_FLAG, '1')
+    } catch {
+      // Sem sessionStorage o login funciona igual; só a mensagem de erro fica genérica.
+    }
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}${next}`, queryParams: { prompt: 'select_account' } },
+    })
+    if (error) throw new Error('Não conseguimos abrir o login do Google. Tente de novo em instantes.')
+  }, [])
+
   const value = useMemo(
-    () => ({ user, loading, login, register, logout, resendConfirmation, linkError, clearLinkError }),
-    [user, loading, login, register, logout, resendConfirmation, linkError, clearLinkError],
+    () => ({ user, loading, login, register, logout, resendConfirmation, loginWithGoogle, linkError, clearLinkError }),
+    [user, loading, login, register, logout, resendConfirmation, loginWithGoogle, linkError, clearLinkError],
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

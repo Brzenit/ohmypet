@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent as RPointerEvent } from 'react'
 import { Link } from 'react-router-dom'
 import banner1 from '../assets/banner-1.jpg'
 import banner3 from '../assets/banner-3.jpg'
@@ -26,6 +26,7 @@ const SLIDES = [
   { img: banner3, to: '/crie-seu-pet', title: 'Personalize seu pet!', alt: 'Personalize seu pet! Crie seu pet virtual para personalização de produtos exclusivos.', cta: 'Criar meu pet' },
 ]
 
+const SLIDE_MS = 6000
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function Carousel() {
@@ -38,7 +39,7 @@ function Carousel() {
 
   useEffect(() => {
     if (paused || prefersReducedMotion()) return
-    const id = window.setInterval(() => setIndex((i) => (i + 1) % count), 6000)
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % count), SLIDE_MS)
     return () => clearInterval(id)
   }, [paused, count, index])
 
@@ -52,7 +53,7 @@ function Carousel() {
 
   return (
     <div
-      className="carrossel"
+      className={`carrossel ${paused ? 'pausado' : ''} ${prefersReducedMotion() ? 'sem-auto' : ''}`}
       role="region"
       aria-roledescription="carrossel"
       aria-label="Destaques"
@@ -89,9 +90,9 @@ function Carousel() {
       </div>
       <button className="seta esq" onClick={() => go(index - 1)} aria-label="Slide anterior">←</button>
       <button className="seta dir" onClick={() => go(index + 1)} aria-label="Próximo slide">→</button>
-      <div className="pontos">
+      <div className="pontos" style={{ '--ponto-tempo': `${SLIDE_MS}ms` } as CSSProperties}>
         {SLIDES.map((_, i) => (
-          <button key={i} onClick={() => go(i)} aria-label={`Ir para o slide ${i + 1}`} aria-current={i === index} />
+          <button key={i} className="ponto-progresso" onClick={() => go(i)} aria-label={`Ir para o slide ${i + 1}`} aria-current={i === index} />
         ))}
       </div>
     </div>

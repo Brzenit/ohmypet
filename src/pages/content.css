@@ -128,9 +128,9 @@
   background: var(--baunilha);
   opacity: 0.55;
 }
-.equipe-rotator .rotator-pontos button[aria-current] {
-  background: var(--amarelo);
-  opacity: 1;
+.equipe-rotator .rotator-pontos button[aria-current='true'] {
+  background: rgba(255, 255, 238, 0.45);
+  --ponto-cheio: var(--amarelo);
 }
 .membro {
   display: grid;

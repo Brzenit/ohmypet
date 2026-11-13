@@ -383,18 +383,17 @@ section.bloco {
 .rotator-pontos button {
   width: 14px;
   height: 14px;
-  border-radius: 50%;
+  border-radius: 99px;
   border: 0;
   padding: 0;
   background: var(--roxo);
   opacity: 0.35;
   cursor: pointer;
-  transition: opacity 0.3s, transform 0.3s var(--mola), background 0.3s;
+  transition: opacity 0.3s, width 0.4s var(--mola), background 0.3s;
 }
-.rotator-pontos button[aria-current] {
-  background: var(--rosa);
+.rotator-pontos button[aria-current='true'] {
+  width: 44px;
   opacity: 1;
-  transform: scale(1.25);
 }
 .rotator-pontos button:focus-visible {
   outline: 3px solid var(--amarelo);
@@ -407,10 +406,36 @@ section.bloco {
     margin: 0 auto;
   }
 }
+/* Bolinha ativa vira uma barrinha que enche até a próxima troca.
+   Pausado (mouse em cima), ela esvazia e recomeça junto com o tempo. */
+.ponto-progresso {
+  position: relative;
+  overflow: hidden;
+}
+.ponto-progresso[aria-current='true']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--ponto-cheio, var(--rosa));
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: ponto-encher var(--ponto-tempo, 6s) linear forwards;
+}
+.pausado .ponto-progresso[aria-current='true']::after,
+.sem-auto .ponto-progresso[aria-current='true']::after {
+  animation: none;
+}
+@keyframes ponto-encher {
+  to { transform: scaleX(1); }
+}
+
 /* Com "reduzir movimento" o card não se desloca, mas o fade continua (troca sem piscar). */
 @media (prefers-reduced-motion: reduce) {
   @keyframes rotator-entra { from { opacity: 0; } }
   @keyframes rotator-sai { to { opacity: 0; } }
   .rotator-item { animation-duration: 0.6s !important; }
   .rotator-grupo.saindo .rotator-item { animation-duration: 0.45s !important; }
+  /* A barrinha só enche devagar, então continua mostrando quanto falta. */
+  .ponto-progresso[aria-current='true']::after { animation-duration: var(--ponto-tempo, 6s) !important; }
 }

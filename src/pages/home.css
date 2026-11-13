@@ -541,9 +541,9 @@
   background: var(--baunilha);
   opacity: 0.55;
 }
-.depo-faixa .rotator-pontos button[aria-current] {
-  background: var(--amarelo);
-  opacity: 1;
+.depo-faixa .rotator-pontos button[aria-current='true'] {
+  background: rgba(255, 255, 238, 0.45);
+  --ponto-cheio: var(--amarelo);
 }
 .depo {
   width: 100%;

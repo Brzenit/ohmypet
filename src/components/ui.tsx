@@ -233,7 +233,7 @@ export function Rotator({
 
   return (
     <div
-      className={`rotator ${className}`}
+      className={`rotator ${className} ${paused || pages < 2 ? 'pausado' : ''}`}
       role="region"
       aria-roledescription="carrossel"
       aria-label={label}
@@ -250,11 +250,12 @@ export function Rotator({
         ))}
       </div>
       {pages > 1 && (
-        <div className="rotator-pontos">
+        <div className="rotator-pontos" style={{ '--ponto-tempo': `${hold}ms` } as CSSProperties}>
           {Array.from({ length: pages }, (_, i) => (
             <button
               key={i}
               type="button"
+              className="ponto-progresso"
               aria-label={`Mostrar grupo ${i + 1} de ${pages}`}
               aria-current={i === current || undefined}
               onClick={() => i !== current && go(i)}

@@ -14,15 +14,32 @@ if (!supabaseReady) {
  * com o erro no fim do endereço (#error_code=otp_expired...). Lemos isso antes do
  * cliente iniciar e limpamos o endereço, para a tela de entrar explicar o que houve.
  */
-function readLinkError(): string | null {
+export interface LinkError {
+  code: string
+  /** 'google' quando o erro veio da volta do login com Google; 'email' para links de e-mail. */
+  source: 'google' | 'email'
+}
+
+/** Marca, antes de ir para o Google, que a próxima volta ao site é desse login. */
+export const GOOGLE_FLAG = 'omp.google'
+
+function readLinkError(): LinkError | null {
   const hash = new URLSearchParams(window.location.hash.slice(1))
   const query = new URLSearchParams(window.location.search)
+  let fromGoogle = false
+  try {
+    fromGoogle = sessionStorage.getItem(GOOGLE_FLAG) === '1'
+    // Só limpamos se a volta tiver tokens ou erro; o cliente cuida dos tokens.
+    if (hash.has('access_token') || hash.has('error') || query.has('error') || query.has('code')) sessionStorage.removeItem(GOOGLE_FLAG)
+  } catch {
+    // Navegação privada pode bloquear o sessionStorage; seguimos sem a marca.
+  }
   const code = hash.get('error_code') ?? query.get('error_code') ?? hash.get('error') ?? query.get('error')
   if (!code) return null
   for (const k of ['error', 'error_code', 'error_description']) query.delete(k)
   const search = query.toString()
   window.history.replaceState(null, '', window.location.pathname + (search ? `?${search}` : ''))
-  return code
+  return { code, source: fromGoogle ? 'google' : 'email' }
 }
 
 export const authLinkError = readLinkError()
