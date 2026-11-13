@@ -2,7 +2,6 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import logo from '../assets/logo.webp'
 import logoFooter from '../assets/logo-footer.webp'
-import starIcon from '../assets/top-divider.webp'
 import userIcon from '../assets/icon-user.webp'
 import socials from '../assets/socials.webp'
 import payments from '../assets/payments.webp'
@@ -225,8 +224,6 @@ export function Layout() {
       <ScrollManager />
       <div className="faixa-topo">
         <span>Caixa transformável em todas as boxes</span>
-        <img src={starIcon} alt="" />
-        <span>3 meses grátis na primeira assinatura</span>
       </div>
       <Header />
       <main className="pagina" key={pathname}>

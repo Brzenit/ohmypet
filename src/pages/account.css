@@ -388,3 +388,37 @@
 .acesso-enviado b {
   overflow-wrap: anywhere;
 }
+
+/* Reenviar o link de confirmação */
+.acesso-cartao .reenviar {
+  margin-top: 14px;
+}
+.reenviar .btn[disabled] {
+  cursor: not-allowed;
+}
+.reenviar-ok {
+  margin: 0;
+  background: var(--amarelo);
+  border: 2px solid var(--roxo);
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.reenviar-dica {
+  margin: 22px 0 0 !important;
+  font-size: 15px;
+}
+.link-voltar {
+  display: block;
+  margin: 18px auto 0;
+  background: none;
+  border: 0;
+  padding: 4px;
+  font: inherit;
+  font-weight: 800;
+  color: var(--roxo);
+  text-decoration: underline;
+  cursor: pointer;
+}

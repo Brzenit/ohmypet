@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react'
 import { Link } from 'react-router-dom'
 import banner1 from '../assets/banner-1.jpg'
-import banner2 from '../assets/banner-2.jpg'
 import banner3 from '../assets/banner-3.jpg'
 import prodBoxes from '../assets/prod-boxes.jpg'
 import prodItens from '../assets/prod-itens.jpg'
@@ -17,14 +16,13 @@ import gato from '../assets/gato.webp'
 import iconDepo from '../assets/icon-depo.webp'
 import gatoCaixa from '../assets/brand-2.webp'
 import { PetAvatar } from '../components/PetAvatar'
-import { BillingToggle, PawField, Reveal } from '../components/ui'
+import { BillingToggle, PawField, Reveal, Rotator } from '../components/ui'
 import { FAQ, PLANS, TESTIMONIALS, formatPrice, monthlyCents } from '../data/content'
 import type { Billing, PetLook, Species } from '../types'
 import './home.css'
 
 const SLIDES = [
   { img: banner1, to: '/#planos', title: 'Feita exclusivamente para o seu melhor amigo!', alt: 'Feita exclusivamente para o seu melhor amigo! Stickers com a cara do seu pet!', cta: 'Quero a minha!' },
-  { img: banner2, to: '/#planos', title: 'Assine hoje e ganhe 3 meses grátis', alt: 'Assine hoje e ganhe 3 meses grátis, mais um presente exclusivo. O bem-estar do seu pet é nossa prioridade!', cta: 'Assinar agora' },
   { img: banner3, to: '/crie-seu-pet', title: 'Personalize seu pet!', alt: 'Personalize seu pet! Crie seu pet virtual para personalização de produtos exclusivos.', cta: 'Criar meu pet' },
 ]
 
@@ -287,8 +285,8 @@ function Planos() {
 }
 
 function Depoimentos() {
-  const Card = ({ t, hidden }: { t: (typeof TESTIMONIALS)[number]; hidden?: boolean }) => (
-    <article className="depo" aria-hidden={hidden || undefined}>
+  const Card = ({ t }: { t: (typeof TESTIMONIALS)[number] }) => (
+    <article className="depo">
       <div>
         <img src={t.avatar} alt="" loading="lazy" />
         <strong>{t.user}<em>{t.time}</em></strong>
@@ -301,11 +299,8 @@ function Depoimentos() {
   return (
     <section className="depoimentos" id="depo">
       <Reveal as="h2" className="titulo">Quem ama, recomenda! <img src={iconDepo} alt="" /></Reveal>
-      <div className="depo-faixa" aria-label="Depoimentos">
-        <div className="depo-trilho">
-          {TESTIMONIALS.map((t) => <Card key={t.user} t={t} />)}
-          {TESTIMONIALS.map((t) => <Card key={`${t.user}-2`} t={t} hidden />)}
-        </div>
+      <div className="depo-faixa">
+        <Rotator label="Depoimentos" hold={6000} items={TESTIMONIALS.map((t) => ({ key: t.user, node: <Card t={t} /> }))} />
       </div>
     </section>
   )

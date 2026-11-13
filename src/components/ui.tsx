@@ -173,3 +173,95 @@ export function PawConfetti({ pieces = 36 }: { pieces?: number }) {
     </div>
   )
 }
+
+const LEAVE_MS = 520
+
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches)
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const on = () => setMatches(mq.matches)
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [query])
+  return matches
+}
+
+/**
+ * Mostra os itens em grupos (3 no computador, 1 no celular), deixa cada grupo
+ * parado por alguns segundos e troca com um fade suave. Para quando o mouse
+ * ou o foco estão em cima. Com "reduzir movimento" a troca vira só um fade.
+ */
+export function Rotator({
+  items,
+  label,
+  hold = 6500,
+  className = '',
+}: {
+  items: { key: string; node: ReactNode }[]
+  label: string
+  hold?: number
+  className?: string
+}) {
+  const narrow = useMediaQuery('(max-width: 720px)')
+  const per = narrow ? 1 : 3
+  const pages = Math.ceil(items.length / per)
+  const [page, setPage] = useState(0)
+  const [leaving, setLeaving] = useState(false)
+  const [paused, setPaused] = useState(false)
+  const timer = useRef<number | undefined>(undefined)
+
+  const current = page % pages
+  const go = useCallback((next: number) => {
+    window.clearTimeout(timer.current)
+    setLeaving(true)
+    timer.current = window.setTimeout(() => {
+      setPage(next)
+      setLeaving(false)
+    }, LEAVE_MS)
+  }, [])
+
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  useEffect(() => {
+    if (paused || pages < 2 || leaving) return
+    const id = window.setTimeout(() => go((current + 1) % pages), hold)
+    return () => window.clearTimeout(id)
+  }, [paused, pages, leaving, current, hold, go])
+
+  const shown = Array.from({ length: Math.min(per, items.length) }, (_, i) => items[(current * per + i) % items.length])
+
+  return (
+    <div
+      className={`rotator ${className}`}
+      role="region"
+      aria-roledescription="carrossel"
+      aria-label={label}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
+      <div className={`rotator-grupo ${leaving ? 'saindo' : ''}`} key={`${current}-${per}`} aria-live="polite">
+        {shown.map((item, i) => (
+          <div key={item.key} className="rotator-item" style={{ '--i': i } as CSSProperties}>
+            {item.node}
+          </div>
+        ))}
+      </div>
+      {pages > 1 && (
+        <div className="rotator-pontos">
+          {Array.from({ length: pages }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Mostrar grupo ${i + 1} de ${pages}`}
+              aria-current={i === current || undefined}
+              onClick={() => i !== current && go(i)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

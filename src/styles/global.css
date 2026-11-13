@@ -344,3 +344,73 @@ section.bloco {
     --header-h: 62px;
   }
 }
+
+/* Rotator: grupos de cards que ficam parados e trocam com fade suave */
+.rotator {
+  max-width: 1340px;
+  margin: 0 auto;
+}
+.rotator-grupo {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  align-items: stretch;
+}
+.rotator-item {
+  display: flex;
+  animation: rotator-entra 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 110ms);
+}
+.rotator-item > * {
+  flex: 1;
+}
+.rotator-grupo.saindo .rotator-item {
+  animation: rotator-sai 0.5s ease-in both;
+  animation-delay: calc(var(--i) * 50ms);
+}
+@keyframes rotator-entra {
+  from { opacity: 0; transform: translateY(22px) scale(0.97); }
+}
+@keyframes rotator-sai {
+  to { opacity: 0; transform: translateY(-14px) scale(0.98); }
+}
+.rotator-pontos {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+.rotator-pontos button {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: var(--roxo);
+  opacity: 0.35;
+  cursor: pointer;
+  transition: opacity 0.3s, transform 0.3s var(--mola), background 0.3s;
+}
+.rotator-pontos button[aria-current] {
+  background: var(--rosa);
+  opacity: 1;
+  transform: scale(1.25);
+}
+.rotator-pontos button:focus-visible {
+  outline: 3px solid var(--amarelo);
+  outline-offset: 2px;
+}
+@media (max-width: 720px) {
+  .rotator-grupo {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 460px;
+    margin: 0 auto;
+  }
+}
+/* Com "reduzir movimento" o card não se desloca, mas o fade continua (troca sem piscar). */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes rotator-entra { from { opacity: 0; } }
+  @keyframes rotator-sai { to { opacity: 0; } }
+  .rotator-item { animation-duration: 0.6s !important; }
+  .rotator-grupo.saindo .rotator-item { animation-duration: 0.45s !important; }
+}

@@ -99,3 +99,113 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Equipe (Quem somos nós) */
+.equipe {
+  background: var(--violeta);
+  position: relative;
+  overflow: hidden;
+}
+.equipe h2 {
+  color: var(--amarelo);
+}
+.equipe-sub {
+  text-align: center;
+  color: var(--baunilha);
+  font-weight: 800;
+  font-size: clamp(16px, 1.8vw, 22px);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 10px 0 0;
+}
+.equipe-rotator {
+  margin-top: 34px;
+}
+.equipe-rotator .rotator-grupo {
+  padding-top: 56px;
+}
+.equipe-rotator .rotator-pontos button {
+  background: var(--baunilha);
+  opacity: 0.55;
+}
+.equipe-rotator .rotator-pontos button[aria-current] {
+  background: var(--amarelo);
+  opacity: 1;
+}
+.membro {
+  display: grid;
+  grid-template-columns: 47% 1fr;
+  align-items: end;
+  gap: 14px;
+  background: var(--baunilha);
+  border: 3px solid var(--roxo);
+  border-radius: 24px;
+  box-shadow: 8px 8px 0 var(--roxo);
+  padding: 0 20px 0 0;
+  min-height: 250px;
+  transition: transform 0.3s var(--mola);
+}
+.membro:hover {
+  transform: translateY(-6px) rotate(-1deg);
+}
+/* A foto sai por cima do card, com uma silhueta colorida atrás, como no material da marca. */
+.membro img {
+  width: 100%;
+  height: 310px;
+  object-fit: cover;
+  object-position: center bottom;
+  margin-top: -60px;
+  align-self: end;
+  border-bottom-left-radius: 21px;
+  filter: drop-shadow(-12px -8px 0 var(--cor));
+}
+.membro > div {
+  padding: 22px 0 24px;
+  align-self: center;
+}
+.membro h3 {
+  color: var(--roxo);
+  font-size: clamp(26px, 2.4vw, 36px);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.membro-cargo {
+  display: inline-block;
+  margin: 10px 0 12px;
+  background: var(--violeta);
+  color: #fff;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.membro p {
+  margin: 0;
+  color: var(--roxo);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.45;
+}
+@media (max-width: 1100px) and (min-width: 721px) {
+  .membro {
+    grid-template-columns: 1fr;
+    padding: 0 20px;
+    text-align: center;
+  }
+  .membro img {
+    height: 220px;
+    object-position: bottom center;
+    border-radius: 0;
+  }
+  .membro > div {
+    padding-top: 0;
+  }
+}
+@media (max-width: 720px) {
+  .membro img {
+    height: 250px;
+  }
+}

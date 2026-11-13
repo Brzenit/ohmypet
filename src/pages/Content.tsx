@@ -1,10 +1,11 @@
+import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
-import caixas from '../assets/brand-1.webp'
+import caixas from '../assets/caixas-novas.webp'
 import petiscos from '../assets/brand-3.webp'
 import ajude from '../assets/step-4.webp'
 import { PetAvatar } from '../components/PetAvatar'
-import { Paw, PawField, Reveal } from '../components/ui'
-import { LOREM, LOREM_SHORT } from '../data/content'
+import { Paw, PawField, Reveal, Rotator } from '../components/ui'
+import { LOREM, LOREM_SHORT, TEAM } from '../data/content'
 import './content.css'
 
 export function Ongs() {
@@ -62,20 +63,31 @@ export function About() {
           <p>Com entregas programadas e curadoria de novos produtos, torna o cuidado com os pets mais simples, acessível e dinâmico, e apoia iniciativas de sustentabilidade e proteção animal.</p>
         </Reveal>
         <Reveal kind="right" className="texto-imagem-foto">
-          <img src={caixas} alt="Três caixas Oh My Pet! nas cores roxo, violeta e amarelo" loading="lazy" />
+          <img src={caixas} alt="Três caixas Oh My Pet! nas cores violeta, roxo e amarelo" loading="lazy" />
         </Reveal>
       </section>
-      <section className="bloco faixa-lavanda">
-        <Reveal as="h2" className="titulo">Lorem ipsum dolor</Reveal>
-        <div className="tres-colunas">
-          {['Lorem', 'Ipsum', 'Dolor'].map((title, i) => (
-            <Reveal key={title} kind="pop" delay={i * 130} className="cartao coluna">
-              <span className="coluna-numero"><Paw size={26} /></span>
-              <h3>{title}</h3>
-              <p>{LOREM_SHORT}</p>
-            </Reveal>
-          ))}
-        </div>
+      <section className="bloco equipe">
+        <Reveal as="h2" className="titulo">Nossa equipe completa</Reveal>
+        <Reveal as="p" delay={80} className="equipe-sub">As pessoas por trás de cada box</Reveal>
+        <Reveal delay={140}>
+          <Rotator
+            label="Equipe Oh My Pet!"
+            className="equipe-rotator"
+            items={TEAM.map((m) => ({
+              key: m.name,
+              node: (
+                <article className="membro" style={{ '--cor': m.color } as CSSProperties}>
+                  <img src={m.photo} alt={`Foto de ${m.name}`} loading="lazy" />
+                  <div>
+                    <h3>{m.name}</h3>
+                    <span className="membro-cargo">{m.role}</span>
+                    <p>{m.text}</p>
+                  </div>
+                </article>
+              ),
+            }))}
+          />
+        </Reveal>
       </section>
       <section className="bloco texto-imagem">
         <Reveal kind="left" className="texto-imagem-foto">

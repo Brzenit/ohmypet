@@ -4,6 +4,12 @@ import avatar2 from '../assets/avatar-2.jpg'
 import avatar3 from '../assets/avatar-3.jpg'
 import avatar4 from '../assets/avatar-4.jpg'
 import avatar5 from '../assets/avatar-5.jpg'
+import beatriz from '../assets/equipe/beatriz.webp'
+import hary from '../assets/equipe/hary.webp'
+import kaua from '../assets/equipe/kaua.webp'
+import maria from '../assets/equipe/maria.webp'
+import nicole from '../assets/equipe/nicole.webp'
+import sophia from '../assets/equipe/sophia.webp'
 
 export interface Plan {
   id: PlanId
@@ -72,3 +78,13 @@ export const FAQ = [
 export const LOREM =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
 export const LOREM_SHORT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.'
+
+/** Equipe da página Quem somos nós; cor é a da sombra recortada atrás da foto. */
+export const TEAM = [
+  { name: 'Beatriz', role: 'Relações públicas e parcerias', text: 'Cuida da comunicação da marca e desenvolve parcerias com ONGs e projetos ligados à causa animal.', photo: beatriz, color: 'var(--amarelo)' },
+  { name: 'Sophia', role: 'Diretora de arte', text: 'Cuida de toda a identidade visual da Oh My Pet!, garantindo que cada detalhe tenha nossa personalidade.', photo: sophia, color: 'var(--roxo)' },
+  { name: 'Kauã', role: 'Diretor de marketing e estratégia', text: 'Planeja as estratégias de marketing e trabalha para fortalecer a marca e aproximá-la de cada vez mais tutores.', photo: kaua, color: 'var(--rosa)' },
+  { name: 'Nicole', role: 'Fotógrafa e social media', text: 'Registra momentos especiais e cuida das redes sociais, aproximando a marca da nossa comunidade pet.', photo: nicole, color: 'var(--lavanda)' },
+  { name: 'Maria', role: 'Planejamento estratégico e CRM', text: 'Planeja a experiência dos tutores e cuida do relacionamento com os clientes, sempre pensando em como tornar cada contato especial.', photo: maria, color: 'var(--amarelo)' },
+  { name: 'Hary', role: 'Redatora e planejamento de conteúdo', text: 'Dá voz e cria conteúdos que traduzem a personalidade da marca de forma leve e criativa.', photo: hary, color: 'var(--roxo)' },
+]

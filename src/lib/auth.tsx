@@ -1,7 +1,7 @@
 import type { AuthError, User as AuthUser } from '@supabase/supabase-js'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { User } from '../types'
-import { supabase, supabaseReady } from './supabase'
+import { authLinkError, supabase, supabaseReady } from './supabase'
 
 interface AuthValue {
   user: User | null
@@ -10,7 +10,20 @@ interface AuthValue {
   /** Devolve true quando a conta ainda precisa ser confirmada pelo e-mail. */
   register: (name: string, email: string, password: string) => Promise<boolean>
   logout: () => Promise<void>
+  /** Manda de novo o link de confirmação para uma conta ainda não confirmada. */
+  resendConfirmation: (email: string) => Promise<void>
+  /** Erro vindo de um link de e-mail aberto agora (vencido, já usado...). */
+  linkError: string | null
+  clearLinkError: () => void
 }
+
+/** Erro de login de uma conta que ainda não confirmou o e-mail. */
+export class UnconfirmedError extends Error {}
+
+/** Espera do Supabase entre dois envios de e-mail para o mesmo endereço. */
+export const RESEND_COOLDOWN_S = 60
+
+const confirmRedirect = () => `${window.location.origin}/conta`
 
 const AuthContext = createContext<AuthValue | null>(null)
 
@@ -26,7 +39,7 @@ function friendly(error: AuthError) {
   if (error.code === 'user_already_exists' || message.includes('already registered')) return 'Já existe uma conta com esse e-mail.'
   if (error.code === 'email_not_confirmed' || message.includes('not confirmed')) return 'Confirme seu e-mail pelo link que enviamos antes de entrar.'
   if (error.code === 'weak_password') return 'Escolha uma senha mais forte, com pelo menos 6 caracteres.'
-  if (error.code === 'over_email_send_rate_limit' || error.status === 429) return 'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.'
+  if (error.code === 'over_email_send_rate_limit' || error.code === 'over_request_rate_limit' || error.status === 429) return 'Muitas tentativas seguidas. Espere um minutinho e tente de novo.'
   if (error.code === 'validation_failed' || message.includes('invalid')) return 'Confira o e-mail digitado.'
   return 'Não conseguimos falar com o servidor. Tente de novo em instantes.'
 }
@@ -34,6 +47,7 @@ function friendly(error: AuthError) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(supabaseReady)
+  const [linkError, setLinkError] = useState(authLinkError)
 
   useEffect(() => {
     if (!supabaseReady) return
@@ -47,6 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password })
+    if (error?.code === 'email_not_confirmed' || error?.message.toLowerCase().includes('not confirmed')) {
+      throw new UnconfirmedError('Sua conta ainda não foi confirmada. Clique no link que enviamos para o seu e-mail.')
+    }
     if (error) throw new Error(friendly(error))
   }, [])
 
@@ -54,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
-      options: { data: { name: name.trim() }, emailRedirectTo: `${window.location.origin}/conta` },
+      options: { data: { name: name.trim() }, emailRedirectTo: confirmRedirect() },
     })
     if (error) throw new Error(friendly(error))
     // Com a confirmação ligada, e-mail repetido volta sem erro e sem identidades.
@@ -67,9 +84,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }, [])
 
+  const resendConfirmation = useCallback(async (email: string) => {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email.trim().toLowerCase(),
+      options: { emailRedirectTo: confirmRedirect() },
+    })
+    if (error) throw new Error(friendly(error))
+  }, [])
+
+  const clearLinkError = useCallback(() => setLinkError(null), [])
+
   const value = useMemo(
-    () => ({ user, loading, login, register, logout }),
-    [user, loading, login, register, logout],
+    () => ({ user, loading, login, register, logout, resendConfirmation, linkError, clearLinkError }),
+    [user, loading, login, register, logout, resendConfirmation, linkError, clearLinkError],
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

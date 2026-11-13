@@ -36,9 +36,9 @@
 
           <!-- Topo amarelo com o logo -->
           <tr>
-            <td align="center" style="background:#ffff7b;border:3px solid #5813ad;border-bottom:0;border-radius:28px 28px 0 0;padding:28px 24px 20px;">
+            <td align="center" bgcolor="#ffff7b" style="background-color:#ffff7b;background-image:linear-gradient(#ffff7b,#ffff7b);border:3px solid #5813ad;border-bottom:0;border-radius:28px 28px 0 0;padding:28px 24px 20px;">
               <a href="{{ .SiteURL }}" style="text-decoration:none;">
-                <img src="https://ohmypet.ohmypet.workers.dev/email/logo.png" width="220" alt="Oh My Pet!" style="display:block;width:220px;max-width:100%;height:auto;border:0;">
+                <img src="https://ohmypet.ohmypet.workers.dev/email/logo.png" width="220" alt="Oh My Pet!" style="display:block;width:220px;max-width:100%;height:auto;border:0;font-family:'Titan One','Arial Black',Arial,sans-serif;font-size:40px;line-height:1.1;font-weight:900;color:#5813ad;text-align:center;">
               </a>
             </td>
           </tr>
@@ -59,13 +59,14 @@
                 Depois disso você já pode criar o pet virtual do seu melhor amigo, escolher a box e até dar um banho nele. 🛁
               </p>
 
-              <!-- Botão no estilo do site: rosa, texto roxo e sombra roxa -->
+              <!-- Botão roxo com texto amarelo e sombra rosa: fundo escuro e texto claro
+                   não são invertidos pelo modo escuro do Gmail. -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 30px;">
                 <tr>
-                  <td align="center" style="border-radius:99px;background:#5813ad;padding:0 6px 6px 0;">
+                  <td align="center" bgcolor="#ff7af6" style="border-radius:99px;background-color:#ff7af6;background-image:linear-gradient(#ff7af6,#ff7af6);padding:0 6px 6px 0;">
                     <a href="{{ .ConfirmationURL }}" target="_blank"
-                       style="display:inline-block;background:#ff7af6;color:#5813ad;font-family:'Titan One','Arial Black',Arial,sans-serif;font-size:20px;line-height:1.2;text-decoration:none;border:3px solid #5813ad;border-radius:99px;padding:14px 34px;">
-                      CONFIRMAR MEU E-MAIL
+                       style="display:inline-block;background-color:#5813ad;background-image:linear-gradient(#5813ad,#5813ad);color:#ffff7b;font-family:'Titan One','Arial Black',Arial,sans-serif;font-size:18px;line-height:1.2;font-weight:900;letter-spacing:0.5px;white-space:nowrap;text-decoration:none;border:3px solid #5813ad;border-radius:99px;padding:15px 28px;">
+                      CONFIRMAR MEU E&#8209;MAIL
                     </a>
                   </td>
                 </tr>
@@ -90,7 +91,7 @@
 
           <!-- Rodapé roxo com o gatinho dormindo -->
           <tr>
-            <td align="center" style="background:#5813ad;border:3px solid #5813ad;border-radius:0 0 28px 28px;padding:26px 24px 28px;font-family:'Nunito',Arial,Helvetica,sans-serif;color:#ffffee;">
+            <td align="center" bgcolor="#5813ad" style="background-color:#5813ad;background-image:linear-gradient(#5813ad,#5813ad);border:3px solid #5813ad;border-radius:0 0 28px 28px;padding:26px 24px 28px;font-family:'Nunito',Arial,Helvetica,sans-serif;color:#ffffee;">
               <img src="https://ohmypet.ohmypet.workers.dev/email/gato.png" width="110" alt="" style="display:block;width:110px;height:auto;border:0;margin:0 auto 12px;">
               <p style="margin:0 0 4px;font-family:'Titan One','Arial Black',Arial,sans-serif;font-size:18px;color:#ffff7b;">
                 Feita exclusivamente para o seu melhor amigo
