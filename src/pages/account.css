@@ -51,6 +51,25 @@
 .acesso-cartao .erro-geral {
   margin: 0;
 }
+.aceite {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.aceite input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--roxo);
+}
+.aceite a {
+  text-decoration: underline;
+}
 .acesso-cartao .btn {
   margin-top: 6px;
 }
@@ -477,4 +496,11 @@
 .btn-google:focus-visible {
   outline: 3px solid var(--rosa);
   outline-offset: 3px;
+}
+
+.conta-cabecalho-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
 }
