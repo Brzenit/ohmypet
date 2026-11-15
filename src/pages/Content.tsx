@@ -5,7 +5,7 @@ import petiscos from '../assets/brand-3.webp'
 import ajude from '../assets/step-4.webp'
 import { PetAvatar } from '../components/PetAvatar'
 import { PawField, Reveal, Rotator } from '../components/ui'
-import { LOREM, TEAM } from '../data/content'
+import { TEAM } from '../data/content'
 import { ADOPTION_STEPS, ONGS, ONG_FAQ } from '../data/ongs'
 import './content.css'
 
@@ -155,8 +155,8 @@ export function About() {
           <img src={petiscos} alt="Petiscos em formato de osso saindo da embalagem" loading="lazy" />
         </Reveal>
         <Reveal kind="right">
-          <h2>Lorem ipsum</h2>
-          <p>{LOREM}</p>
+          <h2>Agora é a vez do seu pet</h2>
+          <p>Você já conhece quem somos e por que estamos aqui: para tirar o peso da rotina e deixar mais espaço para o que importa, a companhia do seu pet. Conte quem ele é e a gente monta uma box pensada só para vocês dois.</p>
           <Link className="btn" to="/crie-seu-pet">CRIAR MEU PET</Link>
         </Reveal>
       </section>

@@ -40,7 +40,6 @@ Outros comandos: `npm run build` (checa os tipos e gera o `dist/`) e `npm run ty
 ## Limites do protótipo
 
 - A assinatura não tem pagamento.
-- O texto de `/ongs` e parte de `/quem-somos` é lorem ipsum (`src/data/content.ts`).
 - Os links do rodapé sem página ainda mostram o aviso "em produção".
 
 ### E-mail de confirmação personalizado
