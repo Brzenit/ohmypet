@@ -19,6 +19,7 @@ export function Subscribe() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(false)
+  const [bonus, setBonus] = useState(0)
 
   useEffect(() => {
     if (!user) return
@@ -50,6 +51,8 @@ export function Subscribe() {
         status: 'ativa',
         createdAt: new Date().toISOString(),
       })
+      // A primeira assinatura rende Patinhas. Se o banco recusar, a assinatura já está feita.
+      setBonus(await api.patinhas.earn('assinatura').then((r) => r.creditado, () => 0))
       setDone(true)
       window.scrollTo({ top: 0, behavior: 'instant' })
     } catch (err) {
@@ -77,6 +80,7 @@ export function Subscribe() {
             <PetAvatar species={pet.species} look={pet.look} className="pulo" title={`Desenho de ${pet.name}`} />
             <h2>Assinatura confirmada!</h2>
             <p>A box do plano {plan.name} de {pet.name} já está na sua conta. Assinatura simulada: nada foi cobrado.</p>
+            {bonus > 0 && <p className="pet-bonus">+{bonus} Patinhas de boas-vindas! <Link to="/patinhas">Ver o Clube Patinhas</Link></p>}
             <Link className="btn" to="/conta">VER MINHA CONTA</Link>
           </div>
         </section>

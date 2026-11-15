@@ -15,7 +15,9 @@ function GoogleLogo() {
   )
 }
 
-const safeNext = (next: string | null) => (next && next.startsWith('/') && !next.startsWith('//') ? next : '/conta')
+const NEED_TERMS = 'Para criar a conta, aceite os Termos de uso e a Política de privacidade.'
+
+const safeNext =(next: string | null) => (next && next.startsWith('/') && !next.startsWith('//') ? next : '/conta')
 
 /** Botão de reenviar o link de confirmação, com a espera do Supabase entre envios. */
 function ResendLink({ initialEmail, askEmail, startCooling }: { initialEmail: string; askEmail?: boolean; startCooling?: boolean }) {
@@ -74,6 +76,7 @@ export function Login() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [accepted, setAccepted] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [sentTo, setSentTo] = useState('')
@@ -95,6 +98,10 @@ export function Login() {
 
   const google = async () => {
     setError('')
+    if (mode === 'cadastrar' && !accepted) {
+      setError(NEED_TERMS)
+      return
+    }
     setGoogleBusy(true)
     try {
       await loginWithGoogle(next)
@@ -115,6 +122,10 @@ export function Login() {
     setUnconfirmed('')
     if (mode === 'cadastrar' && password.length < 6) {
       setError('A senha precisa ter pelo menos 6 caracteres.')
+      return
+    }
+    if (mode === 'cadastrar' && !accepted) {
+      setError(NEED_TERMS)
       return
     }
     setBusy(true)
@@ -187,6 +198,22 @@ export function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </label>
+          {mode === 'cadastrar' && (
+            <label className="aceite">
+              <input
+                type="checkbox"
+                checked={accepted}
+                onChange={(e) => {
+                  setAccepted(e.target.checked)
+                  if (e.target.checked && error === NEED_TERMS) setError('')
+                }}
+              />
+              <span>
+                Li e aceito os <a href="/termos" target="_blank" rel="noopener">Termos de uso</a> e a{' '}
+                <a href="/privacidade" target="_blank" rel="noopener">Política de privacidade</a>.
+              </span>
+            </label>
+          )}
           {error && <p className="erro-geral" role="alert">{error}</p>}
           <button className="btn" disabled={busy}>
             {busy ? 'AGUARDE...' : mode === 'entrar' ? 'ENTRAR' : 'CRIAR CONTA'}

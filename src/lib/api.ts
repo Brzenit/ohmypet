@@ -1,5 +1,6 @@
 import type { PostgrestError } from '@supabase/supabase-js'
-import type { Pet, PetLook, Subscription } from '../types'
+import { completeDetails } from '../data/petOptions'
+import type { PatinhasGanho, PatinhasMovimento, PatinhasResgate, Pet, PetDetails, PetLook, RewardId, Subscription } from '../types'
 import { supabase, supabaseReady } from './supabase'
 
 const OFFLINE = 'Não conseguimos falar com o servidor. Tente de novo em instantes.'
@@ -14,6 +15,7 @@ interface PetRow {
   size: string
   allergies: string
   look: PetLook
+  details: Partial<PetDetails> | null
 }
 
 interface SubscriptionRow {
@@ -36,6 +38,7 @@ const toPet = (r: PetRow): Pet => ({
   size: r.size,
   allergies: r.allergies,
   look: r.look,
+  details: completeDetails(r.details),
 })
 
 const toSubscription = (r: SubscriptionRow): Subscription => ({
@@ -58,8 +61,13 @@ function petColumns(pet: Partial<Pet>) {
   if (pet.size !== undefined) row.size = pet.size
   if (pet.allergies !== undefined) row.allergies = pet.allergies
   if (pet.look !== undefined) row.look = pet.look
+  if (pet.details !== undefined) row.details = pet.details
   return row
 }
+
+// Coluna `details` ainda não criada (migration 0002 não rodou): salva o pet sem o questionário.
+const missingDetailsColumn = (error: PostgrestError | null) =>
+  !!error && (error.code === 'PGRST204' || error.code === '42703') && error.message.includes('details')
 
 async function run<T>(query: PromiseLike<{ data: T | null; error: PostgrestError | null }>): Promise<T> {
   if (!supabaseReady) throw new Error(OFFLINE)
@@ -76,14 +84,95 @@ async function run<T>(query: PromiseLike<{ data: T | null; error: PostgrestError
   return result.data as T
 }
 
+async function savePet(
+  write: (row: Partial<PetRow>) => PromiseLike<{ data: PetRow | null; error: PostgrestError | null }>,
+  row: Partial<PetRow>,
+): Promise<Pet> {
+  if (!supabaseReady) throw new Error(OFFLINE)
+  let first: { data: PetRow | null; error: PostgrestError | null }
+  try {
+    first = await write(row)
+  } catch {
+    throw new Error(OFFLINE)
+  }
+  if (!missingDetailsColumn(first.error)) return toPet(await run(Promise.resolve(first)))
+  console.warn('A coluna pets.details não existe: rode supabase/migrations/0002_pet_details.sql.')
+  const { details: _details, ...withoutDetails } = row
+  return toPet(await run(write(withoutDetails)))
+}
+
+// O banco avisa o motivo da recusa com uma palavra; aqui vira frase para a pessoa.
+const PATINHAS_ERRORS: Record<string, string> = {
+  saldo_insuficiente: 'Você ainda não tem Patinhas suficientes para essa troca.',
+  sem_assinatura: 'Só quem tem uma assinatura ativa pode trocar Patinhas.',
+  limite_mensal: 'Você já fez essa troca neste mês. Volte no mês que vem!',
+  pet_invalido: 'Não encontramos esse pet na sua conta.',
+}
+
+async function rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T> {
+  if (!supabaseReady) throw new Error(OFFLINE)
+  let result: { data: unknown; error: PostgrestError | null }
+  try {
+    result = await supabase.rpc(fn, args)
+  } catch {
+    throw new Error(OFFLINE)
+  }
+  if (result.error) {
+    const known = PATINHAS_ERRORS[result.error.message]
+    if (known) throw new Error(known)
+    console.error(result.error)
+    throw new Error(OFFLINE)
+  }
+  return result.data as T
+}
+
+interface MovimentoRow {
+  id: number
+  tipo: PatinhasMovimento['tipo']
+  valor: number
+  ref: string | null
+  criado_em: string
+}
+
+interface ResgateRow {
+  id: number
+  recompensa: PatinhasResgate['recompensa']
+  custo: number
+  status: PatinhasResgate['status']
+  criado_em: string
+}
+
 export const api = {
+  patinhas: {
+    balance: () => rpc<number>('patinhas_saldo'),
+    earn: (tipo: 'banho' | 'pet' | 'assinatura', ref?: string | number) =>
+      rpc<PatinhasGanho>('patinhas_ganhar', { p_tipo: tipo, p_ref: ref === undefined ? null : String(ref) }),
+    redeem: (reward: RewardId) => rpc<{ saldo: number }>('patinhas_resgatar', { p_recompensa: reward }),
+    history: async (): Promise<PatinhasMovimento[]> =>
+      (await run(supabase.from('patinhas_movimentos').select('*').order('id', { ascending: false }).limit(30)) as MovimentoRow[]).map((r) => ({
+        id: r.id,
+        tipo: r.tipo,
+        valor: r.valor,
+        ref: r.ref,
+        criadoEm: r.criado_em,
+      })),
+    redemptions: async (): Promise<PatinhasResgate[]> =>
+      (await run(supabase.from('patinhas_resgates').select('*').order('id', { ascending: false }).limit(20)) as ResgateRow[]).map((r) => ({
+        id: r.id,
+        recompensa: r.recompensa,
+        custo: r.custo,
+        status: r.status,
+        criadoEm: r.criado_em,
+      })),
+  },
+
   listPets: async (userId: string) =>
     (await run(supabase.from('pets').select('*').eq('user_id', userId).order('id'))).map(toPet),
   getPet: async (id: number) => toPet(await run(supabase.from('pets').select('*').eq('id', id).single())),
-  createPet: async (pet: Omit<Pet, 'id'>) =>
-    toPet(await run(supabase.from('pets').insert(petColumns(pet)).select().single())),
-  updatePet: async (id: number, pet: Partial<Pet>) =>
-    toPet(await run(supabase.from('pets').update(petColumns(pet)).eq('id', id).select().single())),
+  createPet: (pet: Omit<Pet, 'id'>) =>
+    savePet((row) => supabase.from('pets').insert(row).select().single(), petColumns(pet)),
+  updatePet: (id: number, pet: Partial<Pet>) =>
+    savePet((row) => supabase.from('pets').update(row).eq('id', id).select().single(), petColumns(pet)),
   deletePet: async (id: number) => {
     await run(supabase.from('pets').delete().eq('id', id))
   },

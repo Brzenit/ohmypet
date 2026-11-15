@@ -420,3 +420,25 @@
     height: 12px;
   }
 }
+
+/* Patinhas: aviso de treino e de ajuda */
+.jogo-treino {
+  font-size: 13px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border: 2px dashed var(--roxo);
+  border-radius: 99px;
+}
+.jogo-placar:hover {
+  background: var(--rosa);
+}
+.jogo-ajuda-aviso {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 800;
+}
+@media (max-width: 640px) {
+  .jogo-treino {
+    display: none;
+  }
+}

@@ -246,23 +246,29 @@
   max-width: 260px;
 }
 .sociais {
-  position: relative;
-  width: 220px;
-}
-.sociais img {
-}
-.sociais div {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 .sociais button {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
   border-radius: 50%;
-  transition: background 0.2s;
+  background: var(--roxo);
+  color: var(--amarelo);
+  transition: background 0.2s, color 0.2s, transform 0.25s var(--mola);
+}
+.sociais button svg {
+  width: 24px;
+  height: 24px;
 }
 .sociais button:hover {
-  background: rgba(255, 122, 246, 0.35);
+  background: var(--rosa);
+  color: var(--roxo);
+  transform: translateY(-3px) rotate(-4deg);
 }
 .rodape-colunas {
   display: grid;
@@ -324,11 +330,13 @@
   font-size: 12px;
   font-weight: 700;
 }
-.copyright button {
+.copyright button,
+.copyright a {
   font-weight: 700;
   padding: 0;
 }
-.copyright button:hover {
+.copyright button:hover,
+.copyright a:hover {
   text-decoration: underline;
 }
 

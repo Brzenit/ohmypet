@@ -1,5 +1,6 @@
 import type { AuthError, User as AuthUser } from '@supabase/supabase-js'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { TERMS_VERSION } from '../data/legal'
 import type { User } from '../types'
 import { authLinkError, GOOGLE_FLAG, supabase, supabaseReady, type LinkError } from './supabase'
 
@@ -73,7 +74,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
-      options: { data: { name: name.trim() }, emailRedirectTo: confirmRedirect() },
+      // Guarda na conta quando e qual versão dos termos a pessoa aceitou.
+      options: {
+        data: { name: name.trim(), terms_accepted_at: new Date().toISOString(), terms_version: TERMS_VERSION },
+        emailRedirectTo: confirmRedirect(),
+      },
     })
     if (error) throw new Error(friendly(error))
     // Com a confirmação ligada, e-mail repetido volta sem erro e sem identidades.

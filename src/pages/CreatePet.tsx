@@ -1,14 +1,17 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { PetAvatar } from '../components/PetAvatar'
+import { HealthStep, PersonalityStep, ProfileStep, PetResumo } from '../components/PetQuiz'
 import { PawConfetti, PawField, useToast } from '../components/ui'
-import { ACCESSORIES, AGES, FUR_COLORS, PATTERNS, SIZES, TYPES, defaultLook, emptyProfile, toggleAccessory } from '../data/petOptions'
+import { ACCESSORIES, BREEDS, FUR_COLORS, PATTERNS, TYPES, completeDetails, defaultLook, emptyProfile, summarizeAllergies, toggleAccessory } from '../data/petOptions'
 import { api } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import type { Pet, PetLook, PetProfile, Species } from '../types'
 import './create-pet.css'
 
 const DRAFT_KEY = 'omp.petDraft'
+type Step = 1 | 2 | 3 | 4
+const STEPS = ['Seu pet', 'Saúde', 'Jeito de ser', 'Avatar']
 type Tab = 'pelagem' | 'tipo' | 'acessorios'
 const TABS: { id: Tab; label: string }[] = [
   { id: 'pelagem', label: 'Pelagem' },
@@ -19,13 +22,17 @@ const TABS: { id: Tab; label: string }[] = [
 interface Draft {
   profile: PetProfile
   look: PetLook
-  step: 1 | 2
+  step: Step
 }
 
 function loadDraft(): Draft | null {
   try {
     const raw = sessionStorage.getItem(DRAFT_KEY)
-    return raw ? (JSON.parse(raw) as Draft) : null
+    if (!raw) return null
+    const saved = JSON.parse(raw) as Draft
+    // Rascunhos de antes do questionário não têm `details`.
+    const profile = { ...emptyProfile(), ...saved.profile, details: completeDetails(saved.profile.details) }
+    return { ...saved, profile, step: (saved.step >= 1 && saved.step <= 4 ? saved.step : 1) as Step }
   } catch {
     return null
   }
@@ -41,107 +48,25 @@ function randomLook(species: Species): PetLook {
   return { fur: pick(FUR_COLORS).id, pattern: pick(PATTERNS).id, type: pick(TYPES[species]).id, accessories }
 }
 
-function Stepper({ step }: { step: 1 | 2 }) {
+function Stepper({ step }: { step: Step }) {
   return (
     <ol className="passos-pet" aria-label="Etapas">
-      <li className={step === 1 ? 'atual' : 'feito'} aria-current={step === 1 ? 'step' : undefined}>
-        <b>{step === 1 ? '1' : '✓'}</b> Perfil
-      </li>
-      <li className="linha" aria-hidden="true"><i style={{ width: step === 2 ? '100%' : '0%' }} /></li>
-      <li className={step === 2 ? 'atual' : ''} aria-current={step === 2 ? 'step' : undefined}>
-        <b>2</b> Personalizar
-      </li>
+      {STEPS.map((label, i) => {
+        const n = i + 1
+        return (
+          <Fragment key={label}>
+            {i > 0 && (
+              <li className="linha" aria-hidden="true">
+                <i style={{ width: step >= n ? '100%' : '0%' }} />
+              </li>
+            )}
+            <li className={n === step ? 'atual' : n < step ? 'feito' : ''} aria-current={n === step ? 'step' : undefined}>
+              <b>{n < step ? '✓' : n}</b> <span>{label}</span>
+            </li>
+          </Fragment>
+        )
+      })}
     </ol>
-  )
-}
-
-function ProfileStep({
-  profile,
-  onChange,
-  onNext,
-}: {
-  profile: PetProfile
-  onChange: (p: PetProfile) => void
-  onNext: () => void
-}) {
-  const [nameError, setNameError] = useState('')
-  const set = <K extends keyof PetProfile>(key: K, value: PetProfile[K]) => onChange({ ...profile, [key]: value })
-
-  const submit = (e: FormEvent) => {
-    e.preventDefault()
-    if (!profile.name.trim()) {
-      setNameError('Conta pra gente o nome do seu pet.')
-      return
-    }
-    onNext()
-  }
-
-  return (
-    <form className="pet-form cartao" onSubmit={submit} noValidate>
-      <h2>Conte sobre seu pet</h2>
-      <div className="especies" role="group" aria-label="Espécie">
-        {(['dog', 'cat'] as Species[]).map((s) => (
-          <button
-            key={s}
-            type="button"
-            className="especie"
-            aria-pressed={profile.species === s}
-            onClick={() => set('species', s)}
-          >
-            <PetAvatar species={s} look={defaultLook(s)} className="estatico" title="" />
-            {s === 'dog' ? 'Cão' : 'Gato'}
-          </button>
-        ))}
-      </div>
-      <div className="pet-campos">
-        <label className="campo">
-          Nome do pet
-          <input
-            value={profile.name}
-            maxLength={24}
-            placeholder="Ex.: Salem"
-            aria-invalid={!!nameError}
-            onChange={(e) => {
-              setNameError('')
-              set('name', e.target.value)
-            }}
-          />
-          {nameError && <span className="erro">{nameError}</span>}
-        </label>
-        <label className="campo">
-          Raça
-          <input value={profile.breed} placeholder="Ex.: Vira-lata" onChange={(e) => set('breed', e.target.value)} />
-        </label>
-        <div className="campo">
-          <span id="rot-idade">Idade</span>
-          <div className="segmentado" role="group" aria-labelledby="rot-idade">
-            {AGES.map((a) => (
-              <button key={a} type="button" aria-pressed={profile.age === a} onClick={() => set('age', a)}>{a}</button>
-            ))}
-          </div>
-        </div>
-        <div className="campo">
-          <span id="rot-porte">Porte</span>
-          <div className="segmentado" role="group" aria-labelledby="rot-porte">
-            {SIZES.map((s) => (
-              <button key={s} type="button" aria-pressed={profile.size === s} onClick={() => set('size', s)}>{s}</button>
-            ))}
-          </div>
-        </div>
-        <label className="campo inteiro">
-          Alergias e restrições
-          <textarea
-            rows={2}
-            value={profile.allergies}
-            placeholder="Ex.: frango, corantes (deixe em branco se não houver)"
-            onChange={(e) => set('allergies', e.target.value)}
-          />
-        </label>
-      </div>
-      <div className="pet-acoes direita">
-        <button className="btn">PRÓXIMO →</button>
-      </div>
-    </form>
   )
 }
 
@@ -245,7 +170,7 @@ function CustomizeStep({
   )
 }
 
-function Success({ pet, planQuery }: { pet: Pet; planQuery: string }) {
+function Success({ pet, planQuery, bonus }: { pet: Pet; planQuery: string; bonus: number }) {
   return (
     <div className="pet-sucesso cartao">
       <PawConfetti />
@@ -253,6 +178,7 @@ function Success({ pet, planQuery }: { pet: Pet; planQuery: string }) {
         <PetAvatar species={pet.species} look={pet.look} className="pulo" title={`Seu pet ${pet.name}`} />
       </div>
       <h2>{pet.name} ficou demais!</h2>
+      {bonus > 0 && <p className="pet-bonus">+{bonus} Patinhas pelo seu novo pet!</p>}
       <p>Agora é só escolher o plano para receber a primeira box.</p>
       <div className="pet-acoes centro">
         <Link className="btn" to={`/assinar?pet=${pet.id}${planQuery && `&${planQuery}`}`}>ESCOLHER PLANO</Link>
@@ -275,10 +201,11 @@ export function CreatePet() {
   const [draft] = useState(() => (editId ? null : loadDraft()))
   const [profile, setProfile] = useState<PetProfile>(draft?.profile ?? emptyProfile())
   const [look, setLook] = useState<PetLook>(draft?.look ?? defaultLook(draft?.profile.species ?? 'dog'))
-  const [step, setStep] = useState<1 | 2>(draft?.step ?? 1)
+  const [step, setStep] = useState<Step>(draft?.step ?? 1)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState<Pet | null>(null)
+  const [bonus, setBonus] = useState(0)
 
   useEffect(() => {
     if (!editId || authLoading) return
@@ -291,7 +218,7 @@ export function CreatePet() {
       .then((pet) => {
         if (pet.userId !== user.id) throw new Error('Pet não encontrado.')
         const { id: _id, userId: _userId, look: petLook, ...petProfile } = pet
-        setProfile(petProfile)
+        setProfile({ ...petProfile, details: completeDetails(petProfile.details) })
         setLook(petLook)
       })
       .catch(() => navigate('/conta', { replace: true }))
@@ -309,6 +236,9 @@ export function CreatePet() {
   const changeProfile = (next: PetProfile) => {
     if (next.species !== profile.species) {
       setLook((l) => ({ ...l, type: TYPES[next.species][0].id }))
+      // Raça e perguntas específicas da outra espécie não valem mais.
+      const breed = BREEDS[profile.species].includes(next.breed) ? '' : next.breed
+      next = { ...next, breed, details: { ...next.details, extra: {} } }
     }
     setProfile(next)
   }
@@ -323,9 +253,19 @@ export function CreatePet() {
     setSaving(true)
     setError('')
     try {
-      const data = { ...profile, name: profile.name.trim(), userId: user.id, look }
+      const data = {
+        ...profile,
+        name: profile.name.trim(),
+        allergies: summarizeAllergies(profile.details),
+        userId: user.id,
+        look,
+      }
       const pet = editId ? await api.updatePet(editId, data) : await api.createPet(data)
       sessionStorage.removeItem(DRAFT_KEY)
+      if (!editId) {
+        // Pet novo rende Patinhas. Se o banco recusar, o pet já está salvo e fica tudo certo.
+        setBonus(await api.patinhas.earn('pet', pet.id).then((r) => r.creditado, () => 0))
+      }
       setSaved(pet)
     } catch (err) {
       setError((err as Error).message)
@@ -341,21 +281,23 @@ export function CreatePet() {
         <h1>{editId ? `Editar ${profile.name}` : 'Crie seu pet'}</h1>
         <p>Um pet virtual com a cara do seu melhor amigo.</p>
       </div>
-      <section className="bloco criar-pet">
+      <section className={`bloco criar-pet ${step < 4 && !saved ? 'larga' : ''}`}>
         {saved ? (
-          <Success pet={saved} planQuery={planQuery} />
+          <Success pet={saved} planQuery={planQuery} bonus={bonus} />
         ) : (
           <>
             <Stepper step={step} />
-            <div key={step} className="etapa">
-              {step === 1 ? (
-                <ProfileStep profile={profile} onChange={changeProfile} onNext={() => setStep(2)} />
-              ) : (
+            <div key={step} className={`etapa ${step < 4 ? 'com-resumo' : ''}`}>
+              {step === 1 && <ProfileStep profile={profile} onChange={changeProfile} onNext={() => setStep(2)} />}
+              {step === 2 && <HealthStep profile={profile} onChange={changeProfile} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
+              {step === 3 && <PersonalityStep profile={profile} onChange={changeProfile} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
+              {step < 4 && <PetResumo profile={profile} look={look} />}
+              {step === 4 && (
                 <CustomizeStep
                   profile={profile}
                   look={look}
                   onChange={setLook}
-                  onBack={() => setStep(1)}
+                  onBack={() => setStep(3)}
                   onSave={save}
                   saving={saving}
                   error={error}

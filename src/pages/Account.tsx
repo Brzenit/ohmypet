@@ -67,7 +67,10 @@ export function Account() {
       <section className="bloco conta-bloco">
         <div className="conta-cabecalho">
           <h2>Meus pets</h2>
-          <Link className="btn" to="/crie-seu-pet">+ NOVO PET</Link>
+          <span className="conta-cabecalho-acoes">
+            <Link className="btn secundario" to="/patinhas">Clube Patinhas</Link>
+            <Link className="btn" to="/crie-seu-pet">+ NOVO PET</Link>
+          </span>
         </div>
         {pets && pets.length === 0 && (
           <div className="vazio cartao">
@@ -86,6 +89,7 @@ export function Account() {
                 {pet.species === 'dog' ? 'Cão' : 'Gato'}
                 {pet.breed && ` · ${pet.breed}`} · {pet.age} · {pet.size}
               </p>
+              {pet.details.temperament.length > 0 && <p>{pet.details.temperament.join(' · ')}</p>}
               {pet.allergies && <p className="alergias">Alergias: {pet.allergies}</p>}
               <div className="pet-cartao-acoes">
                 {activeFor(pet.id) ? (
