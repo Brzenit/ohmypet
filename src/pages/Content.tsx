@@ -6,6 +6,8 @@ import ajude from '../assets/step-4.webp'
 import { PetAvatar } from '../components/PetAvatar'
 import { PawField, Reveal, Rotator } from '../components/ui'
 import { TEAM } from '../data/content'
+import { COMPANY } from '../data/legal'
+import { MARCAS } from '../data/marcas'
 import { ADOPTION_STEPS, ONGS, ONG_FAQ } from '../data/ongs'
 import './content.css'
 
@@ -108,6 +110,50 @@ export function Ongs() {
   )
 }
 
+function Marcas() {
+  const convite = `mailto:${COMPANY.email}?subject=${encodeURIComponent('Quero ser marca parceira')}`
+  return (
+    <section className="bloco faixa-lavanda marcas" id="marcas">
+      <Reveal as="h2" className="titulo">Marcas que cuidam com a gente</Reveal>
+      <Reveal as="p" delay={80} className="marcas-sub">
+        Cada box da Oh My Pet! reúne marcas que compartilham do nosso jeito de cuidar: com afeto, qualidade e respeito pelos animais e pelo planeta.
+      </Reveal>
+
+      <Reveal kind="pop" delay={100} className="cartao marcas-curadoria">
+        <h3>Nossa curadoria</h3>
+        <p>Escolher o que entra na sua box é uma das partes de que mais gostamos. Antes de uma marca fazer parte do nosso time, a gente olha para o que ela acredita: como trata os animais, como se relaciona com as pessoas e com o meio ambiente, e se fala a mesma língua que a nossa. Assim, quando a box chega à sua casa, você recebe mais do que produtos: recebe o cuidado de quem pensa no seu pet como a gente pensa.</p>
+      </Reveal>
+
+      <div className="marcas-grade">
+        {MARCAS.map((marca, i) => (
+          <Reveal key={marca.id} kind="pop" delay={i * 80} className="cartao ong-cartao marca-cartao">
+            <div className={`ong-logo ${marca.logo ? 'com-logo' : ''}`} style={{ '--cor': marca.logoBg ?? marca.color } as CSSProperties}>
+              {marca.logo ? <img src={marca.logo} alt={`Logo da ${marca.name}`} /> : <span aria-hidden="true">{marca.initials}</span>}
+            </div>
+            <h3>{marca.name}</h3>
+            <p>{marca.text}</p>
+            <a className="btn secundario" href={marca.url} target="_blank" rel="noopener noreferrer">Conhecer</a>
+          </Reveal>
+        ))}
+      </div>
+
+      <Reveal kind="pop" className="cartao marcas-valores">
+        <h3>Valores que a gente faz questão de compartilhar</h3>
+        <p>Cada marca tem a sua história, mas todas caminham na mesma direção: o animal como parte da família, o cuidado feito com atenção, o respeito ao meio ambiente e o apoio a causas que importam para quem ama bichos. É isso que torna a nossa box mais do que uma caixa de produtos: é uma rede de gente que cuida.</p>
+      </Reveal>
+
+      <Reveal className="marcas-convite">
+        <h3>Quer fazer parte dessa rede de cuidado?</h3>
+        <p>Se a sua marca compartilha desses valores e quer chegar até tutores de São Paulo, vamos conversar.</p>
+        <a className="btn amarelo" href={convite}>Falar com a Oh My Pet!</a>
+        <small>{COMPANY.email}</small>
+      </Reveal>
+
+      <p className="marcas-aviso">As marcas apresentadas são nossas parceiras e seus nomes pertencem aos respectivos proprietários.</p>
+    </section>
+  )
+}
+
 export function About() {
   return (
     <>
@@ -150,6 +196,7 @@ export function About() {
           />
         </Reveal>
       </section>
+      <Marcas />
       <section className="bloco texto-imagem">
         <Reveal kind="left" className="texto-imagem-foto">
           <img src={petiscos} alt="Petiscos em formato de osso saindo da embalagem" loading="lazy" />
