@@ -256,12 +256,12 @@ function Planos() {
               <article className={`plano ${p.featured ? 'destaque' : ''}`}>
                 {p.featured && <span className="plano-tag">O MAIS ESCOLHIDO</span>}
                 <h3>{p.name}</h3>
-                <small>DE <s>{formatPrice(p.listCents)}</s> POR</small>
+                <small>{billing === 'anual' ? 'PLANO ANUAL' : 'PLANO MENSAL'}</small>
                 <div className="plano-preco" key={billing}>{reais}<small>,{centavos} /mês</small></div>
                 <p className="plano-nota">
                   {billing === 'anual'
-                    ? `${p.annualDiscount}% de desconto · ${formatPrice(monthlyCents(p, billing) * 12)} por ano`
-                    : `${p.annualDiscount}% de desconto no anual`}
+                    ? `${formatPrice(p.anualCents * 12)} por ano · no mensal, ${formatPrice(p.mensalCents)}/mês`
+                    : `No plano anual, ${formatPrice(p.anualCents)}/mês`}
                 </p>
                 <ul>
                   {p.items.map((item) => (

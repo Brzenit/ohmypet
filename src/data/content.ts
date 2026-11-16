@@ -14,9 +14,10 @@ import sophia from '../assets/equipe/sophia.webp'
 export interface Plan {
   id: PlanId
   name: string
-  listCents: number
-  cents: number
-  annualDiscount: number
+  /** Preço por mês no plano mensal, em centavos. Fixo, sem desconto. */
+  mensalCents: number
+  /** Preço por mês no plano anual, em centavos. Fixo. */
+  anualCents: number
   items: string[]
   featured?: boolean
 }
@@ -25,26 +26,23 @@ export const PLANS: Plan[] = [
   {
     id: 'mini',
     name: 'Oh My Mini!',
-    listCents: 11090,
-    cents: 9990,
-    annualDiscount: 5,
+    mensalCents: 11090,
+    anualCents: 10590,
     items: ['1 brinquedo', '2 petiscos', '1 acessório', '1 mimo', 'Caixa transformável'],
   },
   {
     id: 'wow',
     name: 'Oh My Wow!',
-    listCents: 14090,
-    cents: 12990,
-    annualDiscount: 8,
+    mensalCents: 14090,
+    anualCents: 12990,
     items: ['2 brinquedos', '2 petiscos', '1 acessório', '1 item de higiene', '1 mimo', 'Caixa transformável'],
     featured: true,
   },
   {
     id: 'luxe',
     name: 'Oh My Luxe!',
-    listCents: 17090,
-    cents: 14990,
-    annualDiscount: 12,
+    mensalCents: 17090,
+    anualCents: 14990,
     items: ['3 brinquedos', '2 petiscos', '2 acessórios', '1 item de higiene', '1 mimo', 'Caixa transformável'],
   },
 ]
@@ -53,8 +51,8 @@ export const findPlan = (id: string | null | undefined) => PLANS.find((p) => p.i
 
 export const parseBilling = (value: string | null): Billing => (value === 'anual' ? 'anual' : 'mensal')
 
-export const monthlyCents = (plan: Plan, billing: Billing) =>
-  billing === 'anual' ? Math.round((plan.cents * (100 - plan.annualDiscount)) / 100) : plan.cents
+/** Preço por mês de cada forma de cobrança. */
+export const monthlyCents = (plan: Plan, billing: Billing) => (billing === 'anual' ? plan.anualCents : plan.mensalCents)
 
 export const formatPrice = (cents: number) =>
   `R$ ${(cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`

@@ -104,7 +104,7 @@ export function Subscribe() {
                     {p.featured && <em>O MAIS ESCOLHIDO</em>}
                   </strong>
                   <span>
-                    <s>De {formatPrice(p.listCents)}</s>
+                    {billing === 'anual' && <s>No mensal: {formatPrice(p.mensalCents)}</s>}
                     {formatPrice(monthlyCents(p, billing))}/mês
                   </span>
                 </button>
@@ -128,21 +128,25 @@ export function Subscribe() {
             )}
           </div>
           <aside className="resumo cartao">
-            <span className="selo-promo">PROMOÇÃO</span>
+            {billing === 'anual' && <span className="selo-promo">PLANO ANUAL</span>}
             <h2>Resumo</h2>
             <div className="resumo-linha"><span>Plano</span><b>{plan.name}</b></div>
             <div className="resumo-linha"><span>Pet</span><b>{pet?.name ?? '—'}</b></div>
             <div className="resumo-linha"><span>Vem na box</span><b>{plan.items.join(', ')}</b></div>
-            <div className="resumo-linha"><span>Cobrança</span><b>{billing === 'anual' ? `Anual (${plan.annualDiscount}% de desconto)` : 'Mensal'}</b></div>
+            <div className="resumo-linha"><span>Cobrança</span><b>{billing === 'anual' ? 'Anual' : 'Mensal'}</b></div>
             {billing === 'anual' && (
               <div className="resumo-linha"><span>Por ano</span><b>{formatPrice(monthlyCents(plan, billing) * 12)}</b></div>
             )}
             <div className="resumo-linha"><span>Frete</span><b>Cobrado à parte</b></div>
-            <div className="resumo-linha"><span>Valor original</span><b><s>{formatPrice(plan.listCents)}/mês</s></b></div>
-            <div className="resumo-linha resumo-desconto">
-              <span>Desconto</span>
-              <b>- {formatPrice(plan.listCents - monthlyCents(plan, billing))}/mês</b>
-            </div>
+            {billing === 'anual' && (
+              <>
+                <div className="resumo-linha"><span>No plano mensal</span><b><s>{formatPrice(plan.mensalCents)}/mês</s></b></div>
+                <div className="resumo-linha resumo-desconto">
+                  <span>Economia no anual</span>
+                  <b>- {formatPrice(plan.mensalCents - plan.anualCents)}/mês</b>
+                </div>
+              </>
+            )}
             <div className="resumo-total"><span>Total</span><span>{formatPrice(monthlyCents(plan, billing))}/mês</span></div>
             {error && <p className="erro-geral" role="alert">{error}</p>}
             {alreadyActive && <p className="erro-geral" role="alert">{pet?.name} já tem uma assinatura ativa.</p>}
