@@ -195,8 +195,10 @@
     padding: 0 20px;
     text-align: center;
   }
+  /* Com a foto em cima do texto, ela aparece inteira (contain) para não cortar o alto da cabeça. */
   .membro img {
-    height: 220px;
+    height: 300px;
+    object-fit: contain;
     object-position: bottom center;
     border-radius: 0;
   }
