@@ -13,6 +13,10 @@
 .trilho:active {
   cursor: grabbing;
 }
+/* enquanto o dedo arrasta, o trilho acompanha sem animação */
+.trilho.arrastando {
+  transition: none;
+}
 .slide {
   flex: 0 0 100%;
   min-width: 0;
@@ -702,10 +706,21 @@
   .seta {
     display: none;
   }
+  /* Os slides têm a mesma altura (a do maior). A legenda preenche o que sobra com a mesma cor
+     e centraliza o conteúdo, então não aparece uma faixa de fundo entre o botão e as bolinhas. */
+  .slide {
+    display: flex;
+    flex-direction: column;
+  }
+  .slide img {
+    flex: none;
+  }
   .slide-legenda {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 12px;
     padding: 16px 16px 8px;
     background: var(--baunilha);

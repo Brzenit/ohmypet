@@ -8,6 +8,7 @@ import {
   useState,
   type CSSProperties,
   type ElementType,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react'
 import type { Billing } from '../types'
@@ -188,6 +189,68 @@ function useMediaQuery(query: string) {
 }
 
 /**
+ * Deslizar com o dedo (ou arrastar com o mouse) para a esquerda ou para a direita.
+ * Só conta quando o gesto é mais horizontal do que vertical, então a página
+ * continua rolando normalmente. `onDrag` acompanha o dedo (px) e volta a 0 ao soltar.
+ * `swiped` fica true logo depois de um arraste, para o clique que vem junto ser ignorado.
+ */
+export function useSwipe({
+  onSwipe,
+  onDrag,
+  touchOnly = false,
+  threshold = 50,
+}: {
+  onSwipe: (direction: 1 | -1) => void
+  onDrag?: (dx: number) => void
+  touchOnly?: boolean
+  threshold?: number
+}) {
+  const start = useRef<{ x: number; y: number } | null>(null)
+  const horizontal = useRef(false)
+  const swiped = useRef(false)
+
+  const reset = () => {
+    start.current = null
+    horizontal.current = false
+    onDrag?.(0)
+  }
+
+  const handlers = {
+    onPointerDown: (e: ReactPointerEvent) => {
+      if (touchOnly && e.pointerType === 'mouse') return
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      start.current = { x: e.clientX, y: e.clientY }
+      horizontal.current = false
+      swiped.current = false
+    },
+    onPointerMove: (e: ReactPointerEvent) => {
+      if (!start.current) return
+      const dx = e.clientX - start.current.x
+      const dy = e.clientY - start.current.y
+      if (!horizontal.current) {
+        if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return
+        horizontal.current = true
+      }
+      onDrag?.(dx)
+    },
+    onPointerUp: (e: ReactPointerEvent) => {
+      if (!start.current) return
+      const dx = e.clientX - start.current.x
+      const dy = e.clientY - start.current.y
+      const ok = Math.abs(dx) > threshold && Math.abs(dx) > Math.abs(dy)
+      swiped.current = horizontal.current || ok
+      reset()
+      if (ok) onSwipe(dx < 0 ? 1 : -1)
+    },
+    onPointerCancel: reset,
+    onPointerLeave: (e: ReactPointerEvent) => {
+      if (e.pointerType === 'mouse') reset()
+    },
+  }
+  return { handlers, swiped }
+}
+
+/**
  * Mostra os itens em grupos (3 no computador, 1 no celular), deixa cada grupo
  * parado por alguns segundos e troca com um fade suave. Para quando o mouse
  * ou o foco estão em cima. Com "reduzir movimento" a troca vira só um fade.
@@ -229,6 +292,11 @@ export function Rotator({
     return () => window.clearTimeout(id)
   }, [paused, pages, leaving, current, hold, go])
 
+  const { handlers } = useSwipe({
+    touchOnly: true,
+    onSwipe: (dir) => pages > 1 && go((current + dir + pages) % pages),
+  })
+
   const shown = Array.from({ length: Math.min(per, items.length) }, (_, i) => items[(current * per + i) % items.length])
 
   return (
@@ -241,6 +309,7 @@ export function Rotator({
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
+      {...handlers}
     >
       <div className={`rotator-grupo ${leaving ? 'saindo' : ''}`} key={`${current}-${per}`} aria-live="polite">
         {shown.map((item, i) => (
@@ -250,17 +319,25 @@ export function Rotator({
         ))}
       </div>
       {pages > 1 && (
-        <div className="rotator-pontos" style={{ '--ponto-tempo': `${hold}ms` } as CSSProperties}>
-          {Array.from({ length: pages }, (_, i) => (
-            <button
-              key={i}
-              type="button"
-              className="ponto-progresso"
-              aria-label={`Mostrar grupo ${i + 1} de ${pages}`}
-              aria-current={i === current || undefined}
-              onClick={() => i !== current && go(i)}
-            />
-          ))}
+        <div className="rotator-nav">
+          <button type="button" className="rotator-seta" aria-label="Anterior" onClick={() => go((current - 1 + pages) % pages)}>
+            ←
+          </button>
+          <div className="rotator-pontos" style={{ '--ponto-tempo': `${hold}ms` } as CSSProperties}>
+            {Array.from({ length: pages }, (_, i) => (
+              <button
+                key={i}
+                type="button"
+                className="ponto-progresso"
+                aria-label={`Mostrar grupo ${i + 1} de ${pages}`}
+                aria-current={i === current || undefined}
+                onClick={() => i !== current && go(i)}
+              />
+            ))}
+          </div>
+          <button type="button" className="rotator-seta" aria-label="Próximo" onClick={() => go((current + 1) % pages)}>
+            →
+          </button>
         </div>
       )}
     </div>

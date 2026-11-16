@@ -347,6 +347,7 @@ section.bloco {
 
 /* Rotator: grupos de cards que ficam parados e trocam com fade suave */
 .rotator {
+  touch-action: pan-y;
   max-width: 1340px;
   margin: 0 auto;
 }
@@ -374,11 +375,50 @@ section.bloco {
 @keyframes rotator-sai {
   to { opacity: 0; transform: translateY(-14px) scale(0.98); }
 }
+.rotator-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  margin-top: 30px;
+}
 .rotator-pontos {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 30px;
+}
+/* Setas só no computador; no celular o grupo troca com o deslize do dedo. */
+.rotator-seta {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid var(--roxo);
+  background: var(--baunilha);
+  color: var(--roxo);
+  font-family: var(--titulo);
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--roxo);
+  transition: background 0.2s, transform 0.2s var(--mola), box-shadow 0.2s;
+}
+.rotator-seta:hover {
+  background: var(--amarelo);
+  transform: scale(1.1);
+}
+.rotator-seta:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--roxo);
+}
+.rotator-seta:focus-visible {
+  outline: 3px solid var(--amarelo);
+  outline-offset: 3px;
+}
+@media (max-width: 720px) {
+  .rotator-seta {
+    display: none;
+  }
 }
 .rotator-pontos button {
   width: 14px;
