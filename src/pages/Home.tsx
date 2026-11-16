@@ -17,7 +17,7 @@ import gato from '../assets/gato.webp'
 import iconDepo from '../assets/icon-depo.webp'
 import gatoCaixa from '../assets/brand-2.webp'
 import { PetAvatar } from '../components/PetAvatar'
-import { BillingToggle, PawField, Reveal, Rotator, useSwipe } from '../components/ui'
+import { BillingToggle, PawField, Reveal, Rotator, SetaPatinha, useSwipe } from '../components/ui'
 import { FAQ, PLANS, TESTIMONIALS, formatPrice, monthlyCents } from '../data/content'
 import type { Billing, PetLook, Species } from '../types'
 import './home.css'
@@ -79,8 +79,8 @@ function Carousel() {
           </Link>
         ))}
       </div>
-      <button className="seta esq" onClick={() => go(index - 1)} aria-label="Slide anterior">←</button>
-      <button className="seta dir" onClick={() => go(index + 1)} aria-label="Próximo slide">→</button>
+      <SetaPatinha dir="esq" className="seta" label="Slide anterior" onClick={() => go(index - 1)} />
+      <SetaPatinha dir="dir" className="seta" label="Próximo slide" onClick={() => go(index + 1)} />
       <div className="pontos" style={{ '--ponto-tempo': `${SLIDE_MS}ms` } as CSSProperties}>
         {SLIDES.map((_, i) => (
           <button key={i} className="ponto-progresso" onClick={() => go(i)} aria-label={`Ir para o slide ${i + 1}`} aria-current={i === index} />

@@ -188,6 +188,42 @@ function useMediaQuery(query: string) {
   return matches
 }
 
+/** Seta dos carrosséis: uma patinha da marca com a seta na almofadinha. */
+export function SetaPatinha({
+  dir,
+  label,
+  onClick,
+  className = '',
+}: {
+  dir: 'esq' | 'dir'
+  label: string
+  onClick: () => void
+  className?: string
+}) {
+  const pata = (
+    <>
+      <ellipse cx="28" cy="37" rx="15" ry="12" />
+      <ellipse cx="9" cy="27" rx="5.500" ry="7.500" />
+      <ellipse cx="20" cy="13" rx="5.500" ry="8" />
+      <ellipse cx="36" cy="13" rx="5.500" ry="8" />
+      <ellipse cx="47" cy="27" rx="5.500" ry="7.500" />
+    </>
+  )
+  return (
+    <button type="button" className={`seta-patinha ${dir} ${className}`} aria-label={label} onClick={onClick}>
+      <svg viewBox="0 0 60 56" aria-hidden="true">
+        <g className="pata-sombra" transform="translate(4 4)">{pata}</g>
+        <g className="pata-frente">{pata}</g>
+        <path
+          className="pata-seta"
+          d="M31 31 L24 37 L31 43"
+          transform={dir === 'dir' ? 'translate(56 0) scale(-1 1)' : undefined}
+        />
+      </svg>
+    </button>
+  )
+}
+
 /**
  * Deslizar com o dedo (ou arrastar com o mouse) para a esquerda ou para a direita.
  * Só conta quando o gesto é mais horizontal do que vertical, então a página
@@ -320,9 +356,7 @@ export function Rotator({
       </div>
       {pages > 1 && (
         <div className="rotator-nav">
-          <button type="button" className="rotator-seta" aria-label="Anterior" onClick={() => go((current - 1 + pages) % pages)}>
-            ←
-          </button>
+          <SetaPatinha dir="esq" className="rotator-seta" label="Anterior" onClick={() => go((current - 1 + pages) % pages)} />
           <div className="rotator-pontos" style={{ '--ponto-tempo': `${hold}ms` } as CSSProperties}>
             {Array.from({ length: pages }, (_, i) => (
               <button
@@ -335,9 +369,7 @@ export function Rotator({
               />
             ))}
           </div>
-          <button type="button" className="rotator-seta" aria-label="Próximo" onClick={() => go((current + 1) % pages)}>
-            →
-          </button>
+          <SetaPatinha dir="dir" className="rotator-seta" label="Próximo" onClick={() => go((current + 1) % pages)} />
         </div>
       )}
     </div>

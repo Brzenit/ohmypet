@@ -42,19 +42,7 @@
   position: absolute;
   top: 50%;
   translate: 0 -50%;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--baunilha);
-  font-family: var(--titulo);
-  font-size: 22px;
-  box-shadow: 4px 4px 0 var(--roxo);
   z-index: 2;
-  transition: background 0.2s, transform 0.2s var(--mola);
-}
-.seta:hover {
-  background: var(--amarelo);
-  transform: scale(1.12);
 }
 .seta.esq { left: 18px; }
 .seta.dir { right: 18px; }
