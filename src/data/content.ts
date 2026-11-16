@@ -75,9 +75,16 @@ export const FAQ = [
   { q: 'E a caixa, vai para o lixo?', a: 'De jeito nenhum! Nossa embalagem ganha uma nova função a cada mês, com ideias criativas para você reutilizar.' },
 ]
 
-export const LOREM =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
-export const LOREM_SHORT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.'
+export const VALUES = [
+  'Amor e respeito aos animais',
+  'Foco no cliente',
+  'Inovação',
+  'Praticidade',
+  'Sustentabilidade',
+  'Responsabilidade social',
+  'Transparência',
+  'Colaboração',
+]
 
 /** Equipe da página Quem somos nós; cor é a da sombra recortada atrás da foto. */
 export const TEAM = [

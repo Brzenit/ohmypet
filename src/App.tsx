@@ -3,10 +3,13 @@ import type { ReactNode } from 'react'
 import { Layout } from './components/Layout'
 import { useAuth } from './lib/auth'
 import { Account } from './pages/Account'
+import { BlogEditor, BlogList, BlogPostPage } from './pages/Blog'
 import { About, NotFound, Ongs } from './pages/Content'
 import { CreatePet } from './pages/CreatePet'
 import { Home } from './pages/Home'
+import { Privacy, Terms } from './pages/Legal'
 import { Login } from './pages/Login'
+import { Patinhas } from './pages/Patinhas'
 import { Play } from './pages/Play'
 import { Subscribe } from './pages/Subscribe'
 
@@ -25,8 +28,15 @@ export function App() {
         <Route index element={<Home />} />
         <Route path="crie-seu-pet" element={<CreatePet />} />
         <Route path="brincar" element={<Play />} />
+        <Route path="patinhas" element={<Patinhas />} />
+        <Route path="blog" element={<BlogList />} />
+        <Route path="blog/novo" element={<BlogEditor />} />
+        <Route path="blog/editar/:id" element={<BlogEditor />} />
+        <Route path="blog/:slug" element={<BlogPostPage />} />
         <Route path="ongs" element={<Ongs />} />
         <Route path="quem-somos" element={<About />} />
+        <Route path="termos" element={<Terms />} />
+        <Route path="privacidade" element={<Privacy />} />
         <Route path="entrar" element={<Login />} />
         <Route path="conta" element={<RequireAuth><Account /></RequireAuth>} />
         <Route path="assinar" element={<RequireAuth><Subscribe /></RequireAuth>} />

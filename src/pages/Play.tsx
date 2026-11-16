@@ -6,13 +6,14 @@ import { ACCESSORIES, FUR_COLORS, toggleAccessory } from '../data/petOptions'
 import { Scenes, ToolArt, Tub, type SceneId, type ToolId } from '../game/art'
 import { isSoundOn, saveSoundOn } from '../game/sound'
 import { BathEngine, type EngineStep, type MessKind } from '../game/engine'
+import { bathMessage, formatPatinhas, PATINHAS_RULES } from '../data/patinhas'
 import { api } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import type { Pet, PetLook, Species } from '../types'
 import './play.css'
 
-const PATINHAS_KEY = 'omp.patinhas'
-const POINTS_PER_STEP = 10
+// 5 etapas com ferramenta + a final somam as Patinhas do banho (PATINHAS_RULES.perBath), só para animar a tela.
+const POINTS_PER_STEP = PATINHAS_RULES.perBath / 6
 const TUB_TOP = 362
 
 interface Step {
@@ -51,9 +52,7 @@ const DEMO_PET: GamePet = {
   look: { fur: 'caramelo', pattern: 'mancha', type: 'caida', accessories: [] },
 }
 
-const readPatinhas = () => Number(localStorage.getItem(PATINHAS_KEY)) || 0
-
-function FinishCard({ pet, look, earned, total, onExit }: { pet: GamePet; look: PetLook; earned: number; total: number; onExit: () => void }) {
+function FinishCard({ pet, look, message, total, onExit }: { pet: GamePet; look: PetLook; message: string; total: number | null; onExit: () => void }) {
   const { toast } = useToast()
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -79,7 +78,8 @@ function FinishCard({ pet, look, earned, total, onExit }: { pet: GamePet; look: 
         <span className="jogo-carimbo">DE BANHO TOMADO!</span>
         <div className="jogo-fim-pet"><PetAvatar species={pet.species} look={look} expression="feliz" className="pulo" title={`${pet.name} de banho tomado`} /></div>
         <h1>{pet.name} está brilhando!</h1>
-        <p>Você ganhou <strong>{earned} Patinhas</strong> e já soma <strong>{total}</strong> no total.</p>
+        <p>{message}</p>
+        {total !== null && <p>Agora você tem <strong>{formatPatinhas(total)} Patinhas</strong>.</p>}
         <div className="jogo-fim-acoes">
           {pet.id ? (
             <button className="btn" onClick={saveLook} disabled={saving || saved}>
@@ -90,7 +90,7 @@ function FinishCard({ pet, look, earned, total, onExit }: { pet: GamePet; look: 
           )}
           <button className="btn secundario" onClick={onExit}>Jogar de novo</button>
         </div>
-        <Link className="jogo-fim-link" to="/#planos">Conhecer os planos da box</Link>
+        <Link className="jogo-fim-link" to="/patinhas">Ver o Clube Patinhas</Link>
       </div>
     </section>
   )
@@ -98,8 +98,11 @@ function FinishCard({ pet, look, earned, total, onExit }: { pet: GamePet; look: 
 
 function Game({ pet, onExit }: { pet: GamePet; onExit: () => void }) {
   const [stepIndex, setStepIndex] = useState(0)
+  const canEarn = !!pet.id
   const [earned, setEarned] = useState(0)
-  const [total, setTotal] = useState(readPatinhas)
+  const [balance, setBalance] = useState<number | null>(null)
+  const [assisted, setAssisted] = useState(false)
+  const [result, setResult] = useState<{ message: string; total: number | null } | null>(null)
   const [look, setLook] = useState<PetLook>(pet.look)
   const [finished, setFinished] = useState(false)
   const [pressed, setPressed] = useState(false)
@@ -119,29 +122,32 @@ function Game({ pet, onExit }: { pet: GamePet; onExit: () => void }) {
   const meterRef = useRef<HTMLDivElement>(null)
   const pettedTimer = useRef<number>(undefined)
   const stepIndexRef = useRef(0)
+  // Quem usa o botão de ajuda não ganha Patinhas nesse banho.
+  const assistedRef = useRef(false)
   const [soundOn, setSoundOn] = useState(isSoundOn)
 
   const step = STEPS[stepIndex]
   const fur = FUR_COLORS.find((f) => f.id === pet.look.fur)
 
   const award = useCallback(() => {
+    if (assistedRef.current) return
     setEarned((v) => v + POINTS_PER_STEP)
-    setTotal((v) => {
-      const next = v + POINTS_PER_STEP
-      localStorage.setItem(PATINHAS_KEY, String(next))
-      return next
-    })
   }, [])
 
   const onComplete = useCallback(() => {
     award()
     setStepIndex((current) => {
       const finishedStep = STEPS[current]
-      setCheer({ key: current, text: `${finishedStep.done} +${POINTS_PER_STEP}` })
+      setCheer({ key: current, text: `${finishedStep.done}${canEarn && !assistedRef.current ? ` +${POINTS_PER_STEP}` : ''}` })
       engineRef.current?.celebrate(finishedStep.id === 'enxaguar')
       return current + 1
     })
-  }, [award])
+  }, [award, canEarn])
+
+  useEffect(() => {
+    if (!canEarn) return
+    api.patinhas.balance().then(setBalance).catch(() => setBalance(null))
+  }, [canEarn])
 
   useEffect(() => {
     if (finished) return
@@ -198,13 +204,27 @@ function Game({ pet, onExit }: { pet: GamePet; onExit: () => void }) {
     engineRef.current?.setSoundOn(next)
   }
 
-  const finishGame = () => {
+  const finishGame = async () => {
     award()
     setFinished(true)
     window.scrollTo({ top: 0, behavior: 'instant' })
+    if (!canEarn) {
+      setResult({ message: 'Esse foi um banho de treino. Crie uma conta e o seu pet para ganhar Patinhas de verdade.', total: null })
+    } else if (assistedRef.current) {
+      setResult({ message: 'Você usou a ajuda, então esse banho não rendeu Patinhas. No próximo, faça todas as etapas!', total: balance })
+    } else {
+      try {
+        const r = await api.patinhas.earn('banho')
+        setResult({ message: bathMessage(r.motivo, r.creditado), total: r.saldo })
+      } catch (err) {
+        setResult({ message: (err as Error).message, total: balance })
+      }
+    }
   }
 
-  if (finished) return <FinishCard pet={pet} look={look} earned={earned} total={total} onExit={onExit} />
+  if (finished) return <FinishCard pet={pet} look={look} message={result?.message ?? 'Contando as suas Patinhas...'} total={result?.total ?? null} onExit={onExit} />
+
+  const shown = canEarn ? (balance ?? 0) + earned : earned
 
   const expression: PetExpression = petted ? 'feliz' : pressed && step.pressedFace ? step.pressedFace : 'normal'
 
@@ -219,9 +239,10 @@ function Game({ pet, onExit }: { pet: GamePet; onExit: () => void }) {
               {soundOn ? <path d="M16.500 9 Q18.500 12 16.500 15 M19 6.500 Q23 12 19 17.500" /> : <path d="M17 9.500 L22 14.500 M22 9.500 L17 14.500" />}
             </svg>
           </button>
-          <span className="jogo-placar" aria-label={`${total} Patinhas`}>
-            <Paw size={20} /> <b key={total}>{total}</b>
-          </span>
+          {!canEarn && <span className="jogo-treino">Modo treino: não vale Patinhas</span>}
+          <Link className="jogo-placar" to="/patinhas" aria-label={`${formatPatinhas(shown)} Patinhas. Abrir o Clube Patinhas`}>
+            <Paw size={20} /> <b key={shown}>{formatPatinhas(shown)}</b>
+          </Link>
         </div>
       </header>
 
@@ -262,9 +283,17 @@ function Game({ pet, onExit }: { pet: GamePet; onExit: () => void }) {
               <div className="jogo-progresso" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={0} aria-label="Progresso da etapa">
                 <i ref={meterRef} />
               </div>
-              <button className="jogo-ajuda" onClick={() => engineRef.current?.autoplay()}>
+              <button
+                className="jogo-ajuda"
+                onClick={() => {
+                  assistedRef.current = true
+                  setAssisted(true)
+                  engineRef.current?.autoplay()
+                }}
+              >
                 Fazer essa etapa por mim
               </button>
+              {assisted && canEarn && <p className="jogo-ajuda-aviso">Com ajuda, esse banho não rende Patinhas.</p>}
             </>
           ) : (
             <>
@@ -338,7 +367,7 @@ export function Play() {
       <div className="pagina-topo">
         <PawField color="#5813ad" spots={[[6, 18, 50, -16], [88, 20, 44, 18], [80, 66, 32, -8], [16, 66, 30, 10]]} />
         <h1>Hora do banho!</h1>
-        <p>Dê banho, seque, penteie e escolha o visual. Cada etapa vale Patinhas.</p>
+        <p>Dê banho, seque, penteie e escolha o visual. Terminou o banho, ganhou Patinhas para trocar por vantagens.</p>
       </div>
       <section className="bloco jogo-escolha">
         <h2>Quem vai para o banho?</h2>

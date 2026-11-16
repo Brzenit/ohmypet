@@ -1,0 +1,217 @@
+.patinhas-saldo-bloco {
+  padding-bottom: 8px;
+}
+.patinhas-saldo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(16px, 3vw, 32px);
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 32px);
+  background: var(--amarelo);
+}
+.patinhas-saldo h2 {
+  font-size: clamp(22px, 2.6vw, 30px);
+  margin-bottom: 6px;
+}
+.patinhas-saldo p {
+  margin: 0;
+  font-weight: 700;
+}
+.patinhas-pata {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--roxo);
+  color: var(--amarelo);
+}
+.patinhas-rotulo {
+  font-size: 14px;
+  opacity: 0.8;
+}
+.patinhas-numero {
+  font: 400 clamp(48px, 7vw, 76px)/1 var(--titulo);
+}
+.patinhas-unidade {
+  font: 400 24px var(--titulo);
+}
+.patinhas-meta {
+  margin-top: 12px;
+  font-weight: 700;
+}
+.patinhas-barra {
+  height: 14px;
+  max-width: 420px;
+  margin-bottom: 6px;
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  background: #fff;
+  overflow: hidden;
+}
+.patinhas-barra i {
+  display: block;
+  height: 100%;
+  background: var(--rosa);
+  transition: width 0.6s ease;
+}
+.patinhas-acoes {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  text-align: center;
+}
+.patinhas-acoes small {
+  max-width: 190px;
+  font-weight: 700;
+}
+.patinhas-erro {
+  text-align: center;
+}
+
+.patinhas-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+  max-width: 1120px;
+  margin: 30px auto 0;
+}
+.patinhas-ganho,
+.patinhas-premio {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px;
+}
+.patinhas-ganho h3,
+.patinhas-premio h3 {
+  font-size: 22px;
+  line-height: 1.15;
+}
+.patinhas-ganho p,
+.patinhas-premio p {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.patinhas-valor,
+.patinhas-custo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 2px 14px 2px 10px;
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  background: var(--rosa);
+  font: 400 20px var(--titulo);
+}
+.patinhas-premio {
+  background: #fff;
+}
+.patinhas-premio p {
+  flex: 1;
+}
+.patinhas-custo {
+  background: var(--amarelo);
+}
+.patinhas-premio .btn {
+  align-self: stretch;
+  margin-top: 4px;
+}
+.patinhas-estado {
+  padding: 10px 14px;
+  border: 2px dashed var(--roxo);
+  border-radius: 99px;
+  font-weight: 800;
+  font-size: 14px;
+  text-align: center;
+}
+.patinhas-nota {
+  max-width: 760px;
+  margin: 16px auto 0;
+  text-align: center;
+  font-weight: 700;
+}
+.patinhas-nota a {
+  text-decoration: underline;
+  font-weight: 900;
+}
+.patinhas-trocar {
+  background: var(--lavanda);
+}
+
+.patinhas-historico {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 36px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.patinhas-historico h2,
+.patinhas-regras h2 {
+  font-size: clamp(24px, 3vw, 34px);
+  margin-bottom: 14px;
+}
+.patinhas-historico ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.patinhas-historico li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  box-shadow: 4px 4px 0 var(--roxo);
+}
+.patinhas-historico li small {
+  display: block;
+  font-weight: 700;
+  opacity: 0.7;
+}
+.patinhas-historico .ganho {
+  color: #1a7f4b;
+}
+.patinhas-historico .gasto {
+  color: var(--erro);
+}
+.patinhas-regras {
+  max-width: 820px;
+  margin: 0 auto;
+}
+.patinhas-regras ul {
+  margin: 0 0 14px;
+  padding-left: 24px;
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.patinhas-regras p {
+  font-weight: 700;
+}
+.patinhas-regras a {
+  text-decoration: underline;
+  font-weight: 900;
+}
+
+@media (max-width: 760px) {
+  .patinhas-saldo {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    text-align: center;
+  }
+  .patinhas-barra {
+    margin-inline: auto;
+  }
+  .patinhas-pata {
+    width: 68px;
+    height: 68px;
+  }
+}

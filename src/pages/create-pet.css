@@ -299,3 +299,346 @@
     gap: 8px;
   }
 }
+
+/* Questionário (etapas 1 a 3) */
+.criar-pet.larga {
+  max-width: 1120px;
+}
+.etapa.com-resumo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 28px;
+  align-items: start;
+}
+.passos-pet {
+  max-width: 780px;
+}
+.passos-pet .linha {
+  flex: 1 1 16px;
+  min-width: 16px;
+}
+.etapa-sub {
+  text-align: center;
+  font-weight: 700;
+  margin: 8px 0 24px;
+}
+.grupo {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.grupo legend,
+.campo .dica,
+.dica {
+  padding: 0;
+}
+.grupo legend {
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+.dica {
+  font-weight: 700;
+  font-size: 13px;
+  opacity: 0.7;
+}
+.campo > .dica,
+.campo .dica {
+  display: block;
+  margin-top: -2px;
+}
+.grupo .dica,
+#rot-fase .dica {
+  display: inline;
+  margin: 0;
+}
+
+.fichas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.fichas button {
+  min-height: 42px;
+  padding: 7px 15px;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.2;
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  background: #fff;
+  transition: background 0.2s, color 0.2s, transform 0.2s var(--mola);
+}
+.fichas button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+.fichas button[aria-pressed='true'] {
+  background: var(--roxo);
+  color: var(--baunilha);
+}
+.fichas button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.segmentado button small {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.75;
+}
+.marcar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.campo .marcar input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  accent-color: var(--roxo);
+}
+.campo .idade {
+  display: flex;
+  gap: 14px;
+}
+.idade label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.campo .idade input {
+  width: 92px;
+}
+.campo input:disabled {
+  opacity: 0.45;
+}
+.aprox {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  background: var(--amarelo);
+  border: 2px solid var(--roxo);
+  border-radius: 14px;
+}
+.aprox p {
+  margin: 0;
+  font-weight: 800;
+}
+.bloco-especie {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border: 2px dashed var(--roxo);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.55);
+}
+.bloco-especie h3 {
+  font-size: 22px;
+}
+.extremos {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.75;
+}
+.com-unidade {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.campo .com-unidade input {
+  width: 110px;
+}
+.aviso {
+  margin: 24px 0 0;
+  padding: 12px 14px;
+  background: var(--amarelo);
+  border: 2px solid var(--roxo);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Cartão ao lado: mostra o pet enquanto a pessoa responde */
+.resumo-pet {
+  position: sticky;
+  top: calc(var(--header-h) + 16px);
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 18px;
+  background: var(--amarelo);
+  text-align: center;
+}
+.resumo-pet .pet {
+  max-width: 190px;
+}
+.resumo-texto {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  max-width: 100%;
+}
+.resumo-nome {
+  font: 400 26px/1.1 var(--titulo);
+  overflow-wrap: anywhere;
+}
+.resumo-meta {
+  font-weight: 800;
+  font-size: 14px;
+}
+.resumo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+.resumo-tags span {
+  padding: 2px 10px;
+  background: #fff;
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  font-weight: 800;
+  font-size: 12px;
+}
+.resumo-box {
+  width: 100%;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 2px dashed var(--roxo);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (max-width: 860px) {
+  .etapa.com-resumo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  /* No celular o cartão vira uma faixa curta no topo do formulário. */
+  .resumo-pet {
+    position: static;
+    order: -1;
+    grid-template-columns: 76px minmax(0, 1fr);
+    justify-items: start;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 16px;
+    text-align: left;
+  }
+  .resumo-tags,
+  .resumo-box {
+    display: none;
+  }
+  .resumo-pet .pet {
+    max-width: 76px;
+  }
+}
+@media (max-width: 640px) {
+  .passos-pet {
+    gap: 6px;
+  }
+  .passos-pet li:not(.linha):not(.atual) span {
+    display: none;
+  }
+  .campo .idade {
+    flex-wrap: wrap;
+  }
+}
+
+.pet-bonus {
+  display: inline-block;
+  margin: 12px 0 0;
+  padding: 6px 16px;
+  background: var(--rosa);
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  font-weight: 900;
+}
+.pet-bonus a {
+  text-decoration: underline;
+}
+
+/* Etapa da foto do pet real */
+.pet-foto {
+  padding: clamp(20px, 4vw, 40px);
+}
+.pet-foto h2 {
+  font-size: clamp(24px, 3.2vw, 36px);
+  text-align: center;
+}
+.pet-foto .etapa-sub {
+  max-width: 560px;
+  margin-inline: auto;
+}
+.foto-area {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.foto-vazia {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  width: min(100%, 420px);
+  padding: 36px 20px;
+  border: 3px dashed var(--roxo);
+  border-radius: 20px;
+  background: #fff;
+  text-align: center;
+  transition: background 0.2s, transform 0.25s var(--mola);
+}
+.foto-vazia:hover:not(:disabled) {
+  background: var(--amarelo);
+  transform: translateY(-3px) rotate(-0.6deg);
+}
+.foto-vazia b {
+  font: 400 22px var(--titulo);
+}
+.foto-vazia small {
+  font-weight: 700;
+  max-width: 300px;
+}
+.foto-previa {
+  width: min(100%, 320px);
+  aspect-ratio: 1;
+  border: 3px solid var(--roxo);
+  border-radius: 24px;
+  box-shadow: 8px 8px 0 var(--roxo);
+  background: #fff;
+  overflow: hidden;
+  transform: rotate(-2deg);
+}
+.foto-previa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.foto-acoes {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.foto-opcional {
+  margin: 14px 0 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+.pet-foto .erro-geral {
+  text-align: center;
+  margin: 12px 0 0;
+}

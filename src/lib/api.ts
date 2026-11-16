@@ -1,5 +1,7 @@
 import type { PostgrestError } from '@supabase/supabase-js'
-import type { Pet, PetLook, Subscription } from '../types'
+import demoPosts from '../data/blog-exemplo.json'
+import { completeDetails } from '../data/petOptions'
+import type { BlogDraft, BlogPost, PatinhasGanho, PatinhasMovimento, PatinhasResgate, Pet, PetDetails, PetLook, RewardId, Subscription } from '../types'
 import { supabase, supabaseReady } from './supabase'
 
 const OFFLINE = 'Não conseguimos falar com o servidor. Tente de novo em instantes.'
@@ -14,7 +16,50 @@ interface PetRow {
   size: string
   allergies: string
   look: PetLook
+  details: Partial<PetDetails> | null
+  photo_path?: string | null
 }
+
+interface BlogRow {
+  id: number
+  slug: string
+  title: string
+  summary: string
+  category: string
+  content: string
+  author_name: string
+  published: boolean
+  published_at: string | null
+  created_at: string
+}
+
+const toBlogPost = (r: BlogRow): BlogPost => ({
+  id: r.id,
+  slug: r.slug,
+  title: r.title,
+  summary: r.summary,
+  category: r.category,
+  content: r.content,
+  authorName: r.author_name,
+  published: r.published,
+  publishedAt: r.published_at,
+  createdAt: r.created_at,
+})
+
+// Sem Supabase configurado (só no computador de quem desenvolve), o blog mostra o post de exemplo.
+const DEMO_POSTS: BlogPost[] = demoPosts.map((p, i) => ({
+  id: -(i + 1),
+  slug: p.slug,
+  title: p.title,
+  summary: p.summary,
+  category: p.category,
+  content: p.content.join('\n'),
+  authorName: p.author,
+  published: true,
+  publishedAt: p.publishedAt,
+  createdAt: p.publishedAt,
+  demo: true,
+}))
 
 interface SubscriptionRow {
   id: number
@@ -36,6 +81,8 @@ const toPet = (r: PetRow): Pet => ({
   size: r.size,
   allergies: r.allergies,
   look: r.look,
+  details: completeDetails(r.details),
+  photoPath: r.photo_path ?? undefined,
 })
 
 const toSubscription = (r: SubscriptionRow): Subscription => ({
@@ -58,8 +105,13 @@ function petColumns(pet: Partial<Pet>) {
   if (pet.size !== undefined) row.size = pet.size
   if (pet.allergies !== undefined) row.allergies = pet.allergies
   if (pet.look !== undefined) row.look = pet.look
+  if (pet.details !== undefined) row.details = pet.details
   return row
 }
+
+// Coluna `details` ainda não criada (migration 0002 não rodou): salva o pet sem o questionário.
+const missingDetailsColumn = (error: PostgrestError | null) =>
+  !!error && (error.code === 'PGRST204' || error.code === '42703') && error.message.includes('details')
 
 async function run<T>(query: PromiseLike<{ data: T | null; error: PostgrestError | null }>): Promise<T> {
   if (!supabaseReady) throw new Error(OFFLINE)
@@ -76,14 +128,165 @@ async function run<T>(query: PromiseLike<{ data: T | null; error: PostgrestError
   return result.data as T
 }
 
+async function savePet(
+  write: (row: Partial<PetRow>) => PromiseLike<{ data: PetRow | null; error: PostgrestError | null }>,
+  row: Partial<PetRow>,
+): Promise<Pet> {
+  if (!supabaseReady) throw new Error(OFFLINE)
+  let first: { data: PetRow | null; error: PostgrestError | null }
+  try {
+    first = await write(row)
+  } catch {
+    throw new Error(OFFLINE)
+  }
+  if (!missingDetailsColumn(first.error)) return toPet(await run(Promise.resolve(first)))
+  console.warn('A coluna pets.details não existe: rode supabase/migrations/0002_pet_details.sql.')
+  const { details: _details, ...withoutDetails } = row
+  return toPet(await run(write(withoutDetails)))
+}
+
+// O banco avisa o motivo da recusa com uma palavra; aqui vira frase para a pessoa.
+const PATINHAS_ERRORS: Record<string, string> = {
+  saldo_insuficiente: 'Você ainda não tem Patinhas suficientes para essa troca.',
+  sem_assinatura: 'Só quem tem uma assinatura ativa pode trocar Patinhas.',
+  limite_mensal: 'Você já fez essa troca neste mês. Volte no mês que vem!',
+  pet_invalido: 'Não encontramos esse pet na sua conta.',
+}
+
+async function rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T> {
+  if (!supabaseReady) throw new Error(OFFLINE)
+  let result: { data: unknown; error: PostgrestError | null }
+  try {
+    result = await supabase.rpc(fn, args)
+  } catch {
+    throw new Error(OFFLINE)
+  }
+  if (result.error) {
+    const known = PATINHAS_ERRORS[result.error.message]
+    if (known) throw new Error(known)
+    console.error(result.error)
+    throw new Error(OFFLINE)
+  }
+  return result.data as T
+}
+
+interface MovimentoRow {
+  id: number
+  tipo: PatinhasMovimento['tipo']
+  valor: number
+  ref: string | null
+  criado_em: string
+}
+
+interface ResgateRow {
+  id: number
+  recompensa: PatinhasResgate['recompensa']
+  custo: number
+  status: PatinhasResgate['status']
+  criado_em: string
+}
+
 export const api = {
+  blog: {
+    list: async (): Promise<BlogPost[]> => {
+      if (!supabaseReady) return DEMO_POSTS
+      const rows = await run(supabase.from('blog_posts').select('*').order('published_at', { ascending: false, nullsFirst: true }))
+      return (rows as BlogRow[]).map(toBlogPost)
+    },
+    getBySlug: async (slug: string): Promise<BlogPost | null> => {
+      if (!supabaseReady) return DEMO_POSTS.find((p) => p.slug === slug) ?? null
+      const rows = (await run(supabase.from('blog_posts').select('*').eq('slug', slug).limit(1))) as BlogRow[]
+      return rows[0] ? toBlogPost(rows[0]) : null
+    },
+    getById: async (id: number): Promise<BlogPost | null> => {
+      if (!supabaseReady) return null
+      const rows = (await run(supabase.from('blog_posts').select('*').eq('id', id).limit(1))) as BlogRow[]
+      return rows[0] ? toBlogPost(rows[0]) : null
+    },
+    /** Só administradores (tabela blog_admins) publicam; o banco confere de novo a cada gravação. */
+    isAdmin: async (): Promise<boolean> => (supabaseReady ? Boolean(await rpc<boolean>('is_blog_admin')) : false),
+    save: async (post: BlogDraft, id?: number): Promise<BlogPost> => {
+      if (!supabaseReady) throw new Error(OFFLINE)
+      const row = {
+        slug: post.slug,
+        title: post.title,
+        summary: post.summary,
+        category: post.category,
+        content: post.content,
+        author_name: post.authorName,
+        published: post.published,
+      }
+      let result: { data: BlogRow | null; error: PostgrestError | null }
+      try {
+        result = await (id ? supabase.from('blog_posts').update(row).eq('id', id).select().single() : supabase.from('blog_posts').insert(row).select().single())
+      } catch {
+        throw new Error(OFFLINE)
+      }
+      if (result.error) {
+        console.error(result.error)
+        if (result.error.code === '23505') throw new Error('Já existe um post com esse endereço. Troque o endereço.')
+        if (result.error.code === '23514') throw new Error('Confira o endereço (só letras minúsculas, números e hífens) e o tamanho dos campos.')
+        if (result.error.code === '42501') throw new Error('Você não tem permissão para publicar no blog.')
+        throw new Error(OFFLINE)
+      }
+      return toBlogPost(result.data as BlogRow)
+    },
+    remove: async (id: number) => {
+      await run(supabase.from('blog_posts').delete().eq('id', id))
+    },
+  },
+
+  /** Envia a foto do pet real para o bucket privado e devolve o caminho dela. */
+  uploadPetPhoto: async (userId: string, petId: number, photo: Blob) => {
+    if (!supabaseReady) throw new Error(OFFLINE)
+    const path = `${userId}/${petId}.jpg`
+    const { error } = await supabase.storage.from('pet-photos').upload(path, photo, { upsert: true, contentType: 'image/jpeg' })
+    if (error) {
+      console.error(error)
+      throw new Error(OFFLINE)
+    }
+    // Se a coluna photo_path ainda não existe (migration 0004), a foto fica guardada do mesmo jeito.
+    const { error: linkError } = await supabase.from('pets').update({ photo_path: path }).eq('id', petId)
+    if (linkError) console.warn('Não conseguimos ligar a foto ao pet. Rode supabase/migrations/0004_pet_photos.sql.', linkError)
+    return path
+  },
+  petPhotoUrl: async (path: string) => {
+    if (!supabaseReady) throw new Error(OFFLINE)
+    const { data, error } = await supabase.storage.from('pet-photos').createSignedUrl(path, 3600)
+    if (error || !data) throw new Error(OFFLINE)
+    return data.signedUrl
+  },
+
+  patinhas: {
+    balance: () => rpc<number>('patinhas_saldo'),
+    earn: (tipo: 'banho' | 'pet' | 'assinatura', ref?: string | number) =>
+      rpc<PatinhasGanho>('patinhas_ganhar', { p_tipo: tipo, p_ref: ref === undefined ? null : String(ref) }),
+    redeem: (reward: RewardId) => rpc<{ saldo: number }>('patinhas_resgatar', { p_recompensa: reward }),
+    history: async (): Promise<PatinhasMovimento[]> =>
+      (await run(supabase.from('patinhas_movimentos').select('*').order('id', { ascending: false }).limit(30)) as MovimentoRow[]).map((r) => ({
+        id: r.id,
+        tipo: r.tipo,
+        valor: r.valor,
+        ref: r.ref,
+        criadoEm: r.criado_em,
+      })),
+    redemptions: async (): Promise<PatinhasResgate[]> =>
+      (await run(supabase.from('patinhas_resgates').select('*').order('id', { ascending: false }).limit(20)) as ResgateRow[]).map((r) => ({
+        id: r.id,
+        recompensa: r.recompensa,
+        custo: r.custo,
+        status: r.status,
+        criadoEm: r.criado_em,
+      })),
+  },
+
   listPets: async (userId: string) =>
     (await run(supabase.from('pets').select('*').eq('user_id', userId).order('id'))).map(toPet),
   getPet: async (id: number) => toPet(await run(supabase.from('pets').select('*').eq('id', id).single())),
-  createPet: async (pet: Omit<Pet, 'id'>) =>
-    toPet(await run(supabase.from('pets').insert(petColumns(pet)).select().single())),
-  updatePet: async (id: number, pet: Partial<Pet>) =>
-    toPet(await run(supabase.from('pets').update(petColumns(pet)).eq('id', id).select().single())),
+  createPet: (pet: Omit<Pet, 'id'>) =>
+    savePet((row) => supabase.from('pets').insert(row).select().single(), petColumns(pet)),
+  updatePet: (id: number, pet: Partial<Pet>) =>
+    savePet((row) => supabase.from('pets').update(row).eq('id', id).select().single(), petColumns(pet)),
   deletePet: async (id: number) => {
     await run(supabase.from('pets').delete().eq('id', id))
   },
