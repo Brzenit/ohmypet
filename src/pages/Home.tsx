@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent as RPointerEvent } from 'react'
+import { useCallback, useEffect, useState, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import banner1 from '../assets/banner-1.jpg'
 import banner3 from '../assets/banner-3.jpg'
@@ -16,7 +16,7 @@ import gato from '../assets/gato.webp'
 import iconDepo from '../assets/icon-depo.webp'
 import gatoCaixa from '../assets/brand-2.webp'
 import { PetAvatar } from '../components/PetAvatar'
-import { BillingToggle, PawField, Reveal, Rotator } from '../components/ui'
+import { BillingToggle, PawField, Reveal, Rotator, useSwipe } from '../components/ui'
 import { FAQ, PLANS, TESTIMONIALS, formatPrice, monthlyCents } from '../data/content'
 import type { Billing, PetLook, Species } from '../types'
 import './home.css'
@@ -32,24 +32,16 @@ const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: r
 function Carousel() {
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
-  const startX = useRef<number | null>(null)
-  const swiped = useRef(false)
+  const [drag, setDrag] = useState(0)
   const count = SLIDES.length
   const go = useCallback((i: number) => setIndex((i + count) % count), [count])
+  const { handlers, swiped } = useSwipe({ onSwipe: (dir) => go(index + dir), onDrag: setDrag })
 
   useEffect(() => {
-    if (paused || prefersReducedMotion()) return
+    if (paused || drag !== 0 || prefersReducedMotion()) return
     const id = window.setInterval(() => setIndex((i) => (i + 1) % count), SLIDE_MS)
     return () => clearInterval(id)
-  }, [paused, count, index])
-
-  const onPointerUp = (e: RPointerEvent) => {
-    if (startX.current == null) return
-    const dx = e.clientX - startX.current
-    startX.current = null
-    swiped.current = Math.abs(dx) > 50
-    if (swiped.current) go(index + (dx < 0 ? 1 : -1))
-  }
+  }, [paused, drag, count, index])
 
   return (
     <div
@@ -63,12 +55,9 @@ function Carousel() {
       onBlur={() => setPaused(false)}
     >
       <div
-        className="trilho"
-        style={{ transform: `translateX(${-100 * index}%)` }}
-        onPointerDown={(e) => {
-          startX.current = e.clientX
-        }}
-        onPointerUp={onPointerUp}
+        className={`trilho ${drag ? 'arrastando' : ''}`}
+        style={{ transform: `translateX(calc(${-100 * index}% + ${drag}px))` }}
+        {...handlers}
       >
         {SLIDES.map((s, i) => (
           <Link
