@@ -18,10 +18,11 @@ O site abre em http://localhost:5173.
 
 ## Supabase
 
-1. Rode `supabase/migrations/0001_oh_my_pet.sql`, `0002_pet_details.sql`, `0003_patinhas.sql` e `0004_pet_photos.sql`, nessa ordem, no SQL Editor do projeto. O primeiro cria as tabelas e as regras que deixam cada pessoa ver só os próprios dados. O segundo guarda as respostas do questionário do pet (enquanto ele não rodar, o pet é salvo sem essas respostas). O terceiro cria o Clube Patinhas, descrito em `docs/clube-patinhas.md`. O quarto cria o bucket privado das fotos dos pets (enviadas no fim do cadastro); sem ele, o pet é salvo sem a foto.
+1. Rode `supabase/migrations/0001_oh_my_pet.sql`, `0002_pet_details.sql`, `0003_patinhas.sql`, `0004_pet_photos.sql` e `0005_blog.sql`, nessa ordem, no SQL Editor do projeto. O primeiro cria as tabelas e as regras que deixam cada pessoa ver só os próprios dados. O segundo guarda as respostas do questionário do pet (enquanto ele não rodar, o pet é salvo sem essas respostas). O terceiro cria o Clube Patinhas, descrito em `docs/clube-patinhas.md`. O quarto cria o bucket privado das fotos dos pets (enviadas no fim do cadastro); sem ele, o pet é salvo sem a foto. O quinto cria o blog e já publica um post de teste.
 2. Copie `.env.example` para `.env` e preencha a URL e a chave publicável (Project Settings > API).
 3. No Cloudflare (Workers & Pages > ohmypet), cadastre as mesmas duas variáveis em Settings > Build > Variables and secrets e publique de novo. Elas precisam existir na hora do build, porque o Vite grava os valores no site.
 4. Em Authentication > URL Configuration, coloque `https://ohmypet.ohmypet.workers.dev` em Site URL e adicione `http://localhost:5173/**` em Redirect URLs, para o link de confirmação de e-mail voltar para o site.
+5. Para dar a alguém o poder de publicar no blog, depois da migration `0005_blog.sql`, rode no SQL Editor (trocando o e-mail pelo da conta, que precisa já ter se cadastrado no site): `insert into public.blog_admins (user_id) select id from auth.users where email = 'email@exemplo.com';`
 
 Outros comandos: `npm run build` (checa os tipos e gera o `dist/`) e `npm run typecheck`.
 
@@ -32,6 +33,7 @@ Outros comandos: `npm run build` (checa os tipos e gera o `dist/`) e `npm run ty
 | `/` | Home: carrossel, produtos, conceito, como funciona, planos, depoimentos e dúvidas |
 | `/crie-seu-pet` | Questionário do pet em 4 etapas (perfil, saúde, jeito de ser, avatar), com perguntas próprias para cão e para gato |
 | `/patinhas` | Clube Patinhas: saldo, como ganhar e trocar por vantagens (as regras ficam no banco) |
+| `/blog`, `/blog/:slug` | Blog: qualquer pessoa lê; só administradores publicam em `/blog/novo` e `/blog/editar/:id` |
 | `/assinar` | Escolha de plano e pet, assinatura simulada (exige login) |
 | `/conta` | Pets e assinaturas do usuário (exige login) |
 | `/entrar` | Login e cadastro |
