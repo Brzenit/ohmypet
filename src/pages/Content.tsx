@@ -4,8 +4,8 @@ import caixas from '../assets/caixas-novas.webp'
 import petiscos from '../assets/brand-3.webp'
 import ajude from '../assets/step-4.webp'
 import { PetAvatar } from '../components/PetAvatar'
-import { PawField, Reveal, Rotator } from '../components/ui'
-import { TEAM } from '../data/content'
+import { Paw, PawField, Reveal, Rotator } from '../components/ui'
+import { TEAM, VALUES } from '../data/content'
 import { COMPANY } from '../data/legal'
 import { MARCAS } from '../data/marcas'
 import { ADOPTION_STEPS, ONGS, ONG_FAQ } from '../data/ongs'
@@ -173,6 +173,31 @@ export function About() {
           <img src={caixas} alt="Três caixas Oh My Pet! nas cores violeta, roxo e amarelo" loading="lazy" />
         </Reveal>
       </section>
+      <section className="bloco faixa-amarela mvv">
+        <Reveal as="h2" className="titulo">O que nos move</Reveal>
+        <Reveal as="p" delay={80} className="mvv-sub">Por trás de cada box existe um jeito de enxergar o cuidado com os pets. É ele que guia as nossas escolhas, todos os dias.</Reveal>
+        <div className="tres-colunas mvv-grade">
+          <Reveal kind="pop" className="cartao coluna">
+            <span className="coluna-numero"><Paw size={26} /></span>
+            <h3>Nossa missão</h3>
+            <p>Queremos deixar a vida de quem ama um pet mais leve: oferecer aos tutores uma experiência prática, acessível e recorrente para descobrir e receber produtos pensados para o seu companheiro. No caminho, conectamos consumidores e marcas que cuidam, promovendo o bem-estar animal e práticas sustentáveis.</p>
+          </Reveal>
+          <Reveal kind="pop" delay={110} className="cartao coluna">
+            <span className="coluna-numero"><Paw size={26} /></span>
+            <h3>Nossa visão</h3>
+            <p>Sonhamos em ser uma referência brasileira em assinaturas de produtos pet, aquela em quem você confia de olhos fechados. Para chegar lá, vamos crescer junto com os tutores que nos escolhem, fortalecer as nossas parcerias e expandir a operação de maneira sustentável, sem perder o carinho.</p>
+          </Reveal>
+          <Reveal kind="pop" delay={220} className="cartao coluna">
+            <span className="coluna-numero"><Paw size={26} /></span>
+            <h3>Nossos valores</h3>
+            <ul className="valores-lista">
+              {VALUES.map((v) => <li key={v}>{v}</li>)}
+            </ul>
+            <p>Esses princípios orientam a nossa atuação e o nosso relacionamento com tutores, parceiros e fornecedores.</p>
+          </Reveal>
+        </div>
+      </section>
+
       <section className="bloco equipe">
         <Reveal as="h2" className="titulo">Nossa equipe completa</Reveal>
         <Reveal as="p" delay={80} className="equipe-sub">As pessoas por trás de cada box</Reveal>

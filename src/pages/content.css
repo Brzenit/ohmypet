@@ -437,3 +437,43 @@
   color: var(--baunilha);
   opacity: 0.9;
 }
+
+/* Missão, visão e valores (Quem somos nós) */
+.mvv {
+  text-align: center;
+}
+.mvv-sub {
+  max-width: 700px;
+  margin: 14px auto 0;
+  font-weight: 700;
+  font-size: clamp(16px, 1.5vw, 19px);
+  line-height: 1.55;
+}
+.mvv-grade {
+  margin-top: 40px;
+  text-align: left;
+}
+.mvv-grade .coluna {
+  background: #fff;
+}
+.mvv-grade .coluna p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+.valores-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+.valores-lista li {
+  padding: 4px 12px;
+  background: var(--amarelo);
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.25;
+}
