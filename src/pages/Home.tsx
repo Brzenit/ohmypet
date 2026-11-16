@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import banner1 from '../assets/banner-1.jpg'
+import banner1 from '../assets/banner-1.webp'
 import banner3 from '../assets/banner-3.jpg'
 import bannerAnual from '../assets/banner-anual.webp'
 import prodBoxes from '../assets/prod-boxes.jpg'
