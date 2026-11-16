@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom'
 
 /**
  * Markdown simples para os posts do blog: títulos (## e ###), parágrafos, listas, citação (>),
- * linha (---), **negrito**, *itálico* e [links](endereço).
+ * linha (---), imagem (![descrição](endereço)), **negrito**, *itálico* e [links](endereço).
  * O texto vira elementos do React, nunca HTML cru, então um post não consegue injetar código na página.
  */
 
 const SAFE_LINK = /^(https?:\/\/|\/|#|mailto:)/
+const SAFE_IMAGE = /^(https:\/\/|\/(?!\/))/
 
 function inline(text: string): ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|\*[^*\n]+\*|\[[^\]]+\]\([^)\s]+\))/g).map((part, i) => {
@@ -54,6 +55,7 @@ export function Markdown({ text }: { text: string }) {
     const bullet = /^[-*]\s+(.*)$/.exec(line)
     const numbered = /^\d+\.\s+(.*)$/.exec(line)
     const quoted = /^>\s?(.*)$/.exec(line)
+    const image = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(line)
 
     if (!line.trim()) {
       flush()
@@ -61,6 +63,16 @@ export function Markdown({ text }: { text: string }) {
       flush()
       // O título do post já é o h1 da página, então "#" e "##" viram h2 e "###" vira h3.
       blocks.push(heading[1].length === 3 ? <h3 key={key()}>{inline(heading[2])}</h3> : <h2 key={key()}>{inline(heading[2])}</h2>)
+    } else if (image) {
+      flush()
+      if (SAFE_IMAGE.test(image[2])) {
+        blocks.push(
+          <figure key={key()}>
+            <img src={image[2]} alt={image[1]} loading="lazy" />
+            {image[1] && <figcaption>{image[1]}</figcaption>}
+          </figure>,
+        )
+      }
     } else if (/^-{3,}$/.test(line)) {
       flush()
       blocks.push(<hr key={key()} />)
