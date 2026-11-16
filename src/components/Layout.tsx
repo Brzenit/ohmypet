@@ -16,6 +16,7 @@ const NAV = [
   { to: '/brincar', label: 'Brincar' },
   { to: '/ongs', label: 'Tudo sobre ONG’s' },
   { to: '/#duvidas', label: 'Dúvidas', section: 'duvidas' },
+  { to: '/blog', label: 'Blog' },
   { to: '/quem-somos', label: 'Quem somos nós' },
 ]
 
