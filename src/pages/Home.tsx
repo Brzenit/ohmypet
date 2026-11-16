@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import banner1 from '../assets/banner-1.jpg'
 import banner3 from '../assets/banner-3.jpg'
+import bannerAnual from '../assets/banner-anual.webp'
 import prodBoxes from '../assets/prod-boxes.jpg'
 import prodItens from '../assets/prod-itens.jpg'
 import prodPersonalizados from '../assets/prod-personalizados.jpg'
@@ -24,6 +25,7 @@ import './home.css'
 const SLIDES = [
   { img: banner1, to: '/#planos', title: 'Feita exclusivamente para o seu melhor amigo!', alt: 'Feita exclusivamente para o seu melhor amigo! Stickers com a cara do seu pet!', cta: 'Quero a minha!' },
   { img: banner3, to: '/crie-seu-pet', title: 'Personalize seu pet!', alt: 'Personalize seu pet! Crie seu pet virtual para personalização de produtos exclusivos.', cta: 'Criar meu pet' },
+  { img: bannerAnual, to: '/?cobranca=anual#planos', title: 'Assine o anual e economize!', alt: 'Assine o anual e economize! 12 meses no plano anual com desconto exclusivo.', cta: 'Ver planos anuais' },
 ]
 
 const SLIDE_MS = 6000
@@ -225,7 +227,13 @@ function CriePetChamada() {
 }
 
 function Planos() {
-  const [billing, setBilling] = useState<Billing>('mensal')
+  // O banner do plano anual leva para cá com ?cobranca=anual, já com o anual marcado.
+  const [params] = useSearchParams()
+  const cobranca = params.get('cobranca')
+  const [billing, setBilling] = useState<Billing>(cobranca === 'anual' ? 'anual' : 'mensal')
+  useEffect(() => {
+    if (cobranca === 'anual' || cobranca === 'mensal') setBilling(cobranca)
+  }, [cobranca])
   return (
     <section className="bloco planos" id="planos">
       <Reveal as="h2" className="planos-titulo">
