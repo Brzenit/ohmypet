@@ -568,3 +568,77 @@
 .pet-bonus a {
   text-decoration: underline;
 }
+
+/* Etapa da foto do pet real */
+.pet-foto {
+  padding: clamp(20px, 4vw, 40px);
+}
+.pet-foto h2 {
+  font-size: clamp(24px, 3.2vw, 36px);
+  text-align: center;
+}
+.pet-foto .etapa-sub {
+  max-width: 560px;
+  margin-inline: auto;
+}
+.foto-area {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.foto-vazia {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  width: min(100%, 420px);
+  padding: 36px 20px;
+  border: 3px dashed var(--roxo);
+  border-radius: 20px;
+  background: #fff;
+  text-align: center;
+  transition: background 0.2s, transform 0.25s var(--mola);
+}
+.foto-vazia:hover:not(:disabled) {
+  background: var(--amarelo);
+  transform: translateY(-3px) rotate(-0.6deg);
+}
+.foto-vazia b {
+  font: 400 22px var(--titulo);
+}
+.foto-vazia small {
+  font-weight: 700;
+  max-width: 300px;
+}
+.foto-previa {
+  width: min(100%, 320px);
+  aspect-ratio: 1;
+  border: 3px solid var(--roxo);
+  border-radius: 24px;
+  box-shadow: 8px 8px 0 var(--roxo);
+  background: #fff;
+  overflow: hidden;
+  transform: rotate(-2deg);
+}
+.foto-previa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.foto-acoes {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.foto-opcional {
+  margin: 14px 0 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+.pet-foto .erro-geral {
+  text-align: center;
+  margin: 12px 0 0;
+}

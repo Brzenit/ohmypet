@@ -18,7 +18,7 @@ O site abre em http://localhost:5173.
 
 ## Supabase
 
-1. Rode `supabase/migrations/0001_oh_my_pet.sql`, `0002_pet_details.sql` e `0003_patinhas.sql`, nessa ordem, no SQL Editor do projeto. O primeiro cria as tabelas e as regras que deixam cada pessoa ver só os próprios dados. O segundo guarda as respostas do questionário do pet (enquanto ele não rodar, o pet é salvo sem essas respostas). O terceiro cria o Clube Patinhas, descrito em `docs/clube-patinhas.md`.
+1. Rode `supabase/migrations/0001_oh_my_pet.sql`, `0002_pet_details.sql`, `0003_patinhas.sql` e `0004_pet_photos.sql`, nessa ordem, no SQL Editor do projeto. O primeiro cria as tabelas e as regras que deixam cada pessoa ver só os próprios dados. O segundo guarda as respostas do questionário do pet (enquanto ele não rodar, o pet é salvo sem essas respostas). O terceiro cria o Clube Patinhas, descrito em `docs/clube-patinhas.md`. O quarto cria o bucket privado das fotos dos pets (enviadas no fim do cadastro); sem ele, o pet é salvo sem a foto.
 2. Copie `.env.example` para `.env` e preencha a URL e a chave publicável (Project Settings > API).
 3. No Cloudflare (Workers & Pages > ohmypet), cadastre as mesmas duas variáveis em Settings > Build > Variables and secrets e publique de novo. Elas precisam existir na hora do build, porque o Vite grava os valores no site.
 4. Em Authentication > URL Configuration, coloque `https://ohmypet.ohmypet.workers.dev` em Site URL e adicione `http://localhost:5173/**` em Redirect URLs, para o link de confirmação de e-mail voltar para o site.

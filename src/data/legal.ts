@@ -15,8 +15,8 @@ export const COMPANY = {
 }
 
 /** Sobe quando o texto muda de um jeito que exige novo aceite. É gravado na conta junto com a data do aceite. */
-export const TERMS_VERSION = '2026-11-15.3'
-export const LEGAL_UPDATED = '15 de novembro de 2026'
+export const TERMS_VERSION = '2026-11-16'
+export const LEGAL_UPDATED = '16 de novembro de 2026'
 
 export type Block = string | { list: string[] }
 
@@ -86,7 +86,8 @@ export const TERMS: LegalDoc = {
         'Para montar a box a gente pede informações sobre o seu pet: espécie, raça, idade, aniversário, porte, alimentação, alergias, saúde, temperamento e brincadeiras favoritas. Também criamos um avatar com a aparência dele.',
         'Você é responsável por responder com cuidado. Informar uma alergia ou restrição de forma errada ou incompleta pode fazer com que a box traga itens que não servem para o seu pet.',
         'As respostas ajudam a nossa curadoria, mas o Oh My Pet! não é uma clínica veterinária e nada do que dizemos substitui a orientação de um médico-veterinário. Se o seu pet está doente, em tratamento ou tem dieta prescrita, converse com o veterinário antes de oferecer qualquer item novo.',
-        'Você pode editar ou apagar os dados do pet a qualquer momento na sua conta.',
+        'No fim do cadastro você pode enviar uma foto do seu pet real. Ela é opcional e serve para criarmos figurinhas e artes personalizadas para quem assina um plano. Envie só fotos suas ou que você tenha autorização para usar, e, se houver pessoas na imagem, só com a concordância delas.',
+        'Você pode editar ou apagar os dados do pet, e trocar a foto, a qualquer momento na sua conta.',
       ],
     },
     {
@@ -252,7 +253,7 @@ export const PRIVACY: LegalDoc = {
         {
           list: [
             'Dados da conta: nome, e-mail e senha (guardada de forma protegida, nunca em texto aberto). Se você entrar com o Google, recebemos o nome e o e-mail da sua conta Google.',
-            'Dados do pet: nome, espécie, raça, idade, aniversário, porte, alimentação, alergias, saúde, temperamento, brincadeiras favoritas e a aparência do avatar. Esses dados são sobre o animal, mas ficam ligados à sua conta.',
+            'Dados do pet: nome, espécie, raça, idade, aniversário, porte, alimentação, alergias, saúde, temperamento, brincadeiras favoritas, a aparência do avatar e, se você enviar, a foto do pet. Esses dados são sobre o animal, mas ficam ligados à sua conta.',
             'Dados da assinatura: plano escolhido, forma de cobrança, situação (ativa ou cancelada) e datas.',
             'Dados de entrega: nome de quem recebe, endereço e telefone, quando você contratar uma box.',
             'Dados de pagamento: quem processa o pagamento é um parceiro especializado. Nós recebemos só o resultado da cobrança e os últimos dígitos do cartão, não o número completo.',
@@ -270,6 +271,7 @@ export const PRIVACY: LegalDoc = {
         {
           list: [
             'Criar e manter a sua conta, e montar a box do seu pet: execução do contrato.',
+            'Usar a foto do seu pet para criar figurinhas e artes personalizadas: o seu consentimento, dado ao enviar a foto, que você pode retirar apagando a foto na conta.',
             'Cobrar, entregar, emitir nota fiscal e atender você: execução do contrato e cumprimento de obrigação legal.',
             'Enviar avisos sobre a sua assinatura, entrega e mudanças nos termos: execução do contrato.',
             'Enviar novidades, dicas e ofertas por e-mail: o seu consentimento, que você pode retirar a qualquer momento.',
