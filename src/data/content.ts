@@ -75,6 +75,17 @@ export const FAQ = [
   { q: 'E a caixa, vai para o lixo?', a: 'De jeito nenhum! Nossa embalagem ganha uma nova função a cada mês, com ideias criativas para você reutilizar.' },
 ]
 
+export const VALUES = [
+  'Amor e respeito aos animais',
+  'Foco no cliente',
+  'Inovação',
+  'Praticidade',
+  'Sustentabilidade',
+  'Responsabilidade social',
+  'Transparência',
+  'Colaboração',
+]
+
 /** Equipe da página Quem somos nós; cor é a da sombra recortada atrás da foto. */
 export const TEAM = [
   { name: 'Beatriz', role: 'Relações públicas e parcerias', text: 'Cuida da comunicação da marca e desenvolve parcerias com ONGs e projetos ligados à causa animal.', photo: beatriz, color: 'var(--amarelo)' },

@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { PetAvatar } from '../components/PetAvatar'
 import { HealthStep, PersonalityStep, ProfileStep, PetResumo } from '../components/PetQuiz'
+import { PhotoStep, dataUrlToBlob, type PhotoValue } from '../components/PetPhoto'
 import { PawConfetti, PawField, useToast } from '../components/ui'
 import { ACCESSORIES, BREEDS, FUR_COLORS, PATTERNS, TYPES, completeDetails, defaultLook, emptyProfile, summarizeAllergies, toggleAccessory } from '../data/petOptions'
 import { api } from '../lib/api'
@@ -10,8 +11,8 @@ import type { Pet, PetLook, PetProfile, Species } from '../types'
 import './create-pet.css'
 
 const DRAFT_KEY = 'omp.petDraft'
-type Step = 1 | 2 | 3 | 4
-const STEPS = ['Seu pet', 'Saúde', 'Jeito de ser', 'Avatar']
+type Step = 1 | 2 | 3 | 4 | 5
+const STEPS = ['Seu pet', 'Saúde', 'Jeito de ser', 'Avatar', 'Foto']
 type Tab = 'pelagem' | 'tipo' | 'acessorios'
 const TABS: { id: Tab; label: string }[] = [
   { id: 'pelagem', label: 'Pelagem' },
@@ -23,6 +24,8 @@ interface Draft {
   profile: PetProfile
   look: PetLook
   step: Step
+  /** Foto já preparada (data URL), para não se perder se a pessoa sair para entrar na conta. */
+  photo?: string
 }
 
 function loadDraft(): Draft | null {
@@ -32,7 +35,7 @@ function loadDraft(): Draft | null {
     const saved = JSON.parse(raw) as Draft
     // Rascunhos de antes do questionário não têm `details`.
     const profile = { ...emptyProfile(), ...saved.profile, details: completeDetails(saved.profile.details) }
-    return { ...saved, profile, step: (saved.step >= 1 && saved.step <= 4 ? saved.step : 1) as Step }
+    return { ...saved, profile, step: (saved.step >= 1 && saved.step <= 5 ? saved.step : 1) as Step }
   } catch {
     return null
   }
@@ -75,21 +78,13 @@ function CustomizeStep({
   look,
   onChange,
   onBack,
-  onSave,
-  saving,
-  error,
-  isEdit,
-  loggedIn,
+  onNext,
 }: {
   profile: PetProfile
   look: PetLook
   onChange: (l: PetLook) => void
   onBack: () => void
-  onSave: () => void
-  saving: boolean
-  error: string
-  isEdit: boolean
-  loggedIn: boolean
+  onNext: () => void
 }) {
   const [tab, setTab] = useState<Tab>('pelagem')
   const [bounce, setBounce] = useState(0)
@@ -159,18 +154,15 @@ function CustomizeStep({
           ))}
       </div>
 
-      {error && <p className="erro-geral" role="alert">{error}</p>}
       <div className="pet-acoes">
         <button className="btn secundario" onClick={onBack}>← Voltar</button>
-        <button className="btn" onClick={onSave} disabled={saving}>
-          {saving ? 'SALVANDO...' : isEdit ? 'SALVAR ALTERAÇÕES' : loggedIn ? 'SALVAR MEU PET' : 'ENTRAR E SALVAR'}
-        </button>
+        <button className="btn" onClick={onNext}>PRÓXIMO →</button>
       </div>
     </div>
   )
 }
 
-function Success({ pet, planQuery, bonus }: { pet: Pet; planQuery: string; bonus: number }) {
+function Success({ pet, planQuery, bonus, photoSent }: { pet: Pet; planQuery: string; bonus: number; photoSent: boolean }) {
   return (
     <div className="pet-sucesso cartao">
       <PawConfetti />
@@ -179,6 +171,7 @@ function Success({ pet, planQuery, bonus }: { pet: Pet; planQuery: string; bonus
       </div>
       <h2>{pet.name} ficou demais!</h2>
       {bonus > 0 && <p className="pet-bonus">+{bonus} Patinhas pelo seu novo pet!</p>}
+      {photoSent && <p>Recebemos a foto de {pet.name}! Vamos usá-la para criar figurinhas e artes especiais.</p>}
       <p>Agora é só escolher o plano para receber a primeira box.</p>
       <div className="pet-acoes centro">
         <Link className="btn" to={`/assinar?pet=${pet.id}${planQuery && `&${planQuery}`}`}>ESCOLHER PLANO</Link>
@@ -206,6 +199,8 @@ export function CreatePet() {
   const [error, setError] = useState('')
   const [saved, setSaved] = useState<Pet | null>(null)
   const [bonus, setBonus] = useState(0)
+  const [photo, setPhoto] = useState<PhotoValue | null>(draft?.photo ? { src: draft.photo, isNew: true } : null)
+  const [photoSent, setPhotoSent] = useState(false)
 
   useEffect(() => {
     if (!editId || authLoading) return
@@ -217,17 +212,24 @@ export function CreatePet() {
       .getPet(editId)
       .then((pet) => {
         if (pet.userId !== user.id) throw new Error('Pet não encontrado.')
-        const { id: _id, userId: _userId, look: petLook, ...petProfile } = pet
+        const { id: _id, userId: _userId, look: petLook, photoPath, ...petProfile } = pet
         setProfile({ ...petProfile, details: completeDetails(petProfile.details) })
         setLook(petLook)
+        if (photoPath) api.petPhotoUrl(photoPath).then((src) => setPhoto({ src, isNew: false })).catch(() => undefined)
       })
       .catch(() => navigate('/conta', { replace: true }))
   }, [editId, user, authLoading, navigate])
 
   useEffect(() => {
     if (editId || saved) return
-    sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ profile, look, step } satisfies Draft))
-  }, [profile, look, step, editId, saved])
+    const draftNow: Draft = { profile, look, step, photo: photo?.isNew ? photo.src : undefined }
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draftNow))
+    } catch {
+      // Sem espaço para a foto no rascunho: guarda o resto.
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ ...draftNow, photo: undefined }))
+    }
+  }, [profile, look, step, photo, editId, saved])
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
@@ -266,6 +268,15 @@ export function CreatePet() {
         // Pet novo rende Patinhas. Se o banco recusar, o pet já está salvo e fica tudo certo.
         setBonus(await api.patinhas.earn('pet', pet.id).then((r) => r.creditado, () => 0))
       }
+      if (photo?.isNew) {
+        // O pet já está salvo; se a foto falhar, a pessoa pode mandar de novo ao editar.
+        try {
+          await api.uploadPetPhoto(user.id, pet.id, dataUrlToBlob(photo.src))
+          setPhotoSent(true)
+        } catch {
+          toast('Seu pet foi salvo, mas não conseguimos enviar a foto. Tente de novo em Editar.')
+        }
+      }
       setSaved(pet)
     } catch (err) {
       setError((err as Error).message)
@@ -283,7 +294,7 @@ export function CreatePet() {
       </div>
       <section className={`bloco criar-pet ${step < 4 && !saved ? 'larga' : ''}`}>
         {saved ? (
-          <Success pet={saved} planQuery={planQuery} bonus={bonus} />
+          <Success pet={saved} planQuery={planQuery} bonus={bonus} photoSent={photoSent} />
         ) : (
           <>
             <Stepper step={step} />
@@ -293,11 +304,14 @@ export function CreatePet() {
               {step === 3 && <PersonalityStep profile={profile} onChange={changeProfile} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
               {step < 4 && <PetResumo profile={profile} look={look} />}
               {step === 4 && (
-                <CustomizeStep
-                  profile={profile}
-                  look={look}
-                  onChange={setLook}
-                  onBack={() => setStep(3)}
+                <CustomizeStep profile={profile} look={look} onChange={setLook} onBack={() => setStep(3)} onNext={() => setStep(5)} />
+              )}
+              {step === 5 && (
+                <PhotoStep
+                  petName={profile.name}
+                  photo={photo}
+                  onChange={setPhoto}
+                  onBack={() => setStep(4)}
                   onSave={save}
                   saving={saving}
                   error={error}

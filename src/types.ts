@@ -65,6 +65,8 @@ export interface Pet extends PetProfile {
   id: number
   userId: string
   look: PetLook
+  /** Caminho da foto do pet real no bucket pet-photos, quando a pessoa enviou. */
+  photoPath?: string
 }
 
 export type PatinhasTipo = 'banho' | 'sequencia' | 'pet' | 'assinatura' | 'resgate' | 'expiracao'

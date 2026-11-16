@@ -16,6 +16,7 @@ interface PetRow {
   allergies: string
   look: PetLook
   details: Partial<PetDetails> | null
+  photo_path?: string | null
 }
 
 interface SubscriptionRow {
@@ -39,6 +40,7 @@ const toPet = (r: PetRow): Pet => ({
   allergies: r.allergies,
   look: r.look,
   details: completeDetails(r.details),
+  photoPath: r.photo_path ?? undefined,
 })
 
 const toSubscription = (r: SubscriptionRow): Subscription => ({
@@ -143,6 +145,27 @@ interface ResgateRow {
 }
 
 export const api = {
+  /** Envia a foto do pet real para o bucket privado e devolve o caminho dela. */
+  uploadPetPhoto: async (userId: string, petId: number, photo: Blob) => {
+    if (!supabaseReady) throw new Error(OFFLINE)
+    const path = `${userId}/${petId}.jpg`
+    const { error } = await supabase.storage.from('pet-photos').upload(path, photo, { upsert: true, contentType: 'image/jpeg' })
+    if (error) {
+      console.error(error)
+      throw new Error(OFFLINE)
+    }
+    // Se a coluna photo_path ainda não existe (migration 0004), a foto fica guardada do mesmo jeito.
+    const { error: linkError } = await supabase.from('pets').update({ photo_path: path }).eq('id', petId)
+    if (linkError) console.warn('Não conseguimos ligar a foto ao pet. Rode supabase/migrations/0004_pet_photos.sql.', linkError)
+    return path
+  },
+  petPhotoUrl: async (path: string) => {
+    if (!supabaseReady) throw new Error(OFFLINE)
+    const { data, error } = await supabase.storage.from('pet-photos').createSignedUrl(path, 3600)
+    if (error || !data) throw new Error(OFFLINE)
+    return data.signedUrl
+  },
+
   patinhas: {
     balance: () => rpc<number>('patinhas_saldo'),
     earn: (tipo: 'banho' | 'pet' | 'assinatura', ref?: string | number) =>
