@@ -1,5 +1,5 @@
 import type { PostgrestError } from '@supabase/supabase-js'
-import demoPost from '../data/blog-exemplo.json'
+import demoPosts from '../data/blog-exemplo.json'
 import { completeDetails } from '../data/petOptions'
 import type { BlogDraft, BlogPost, PatinhasGanho, PatinhasMovimento, PatinhasResgate, Pet, PetDetails, PetLook, RewardId, Subscription } from '../types'
 import { supabase, supabaseReady } from './supabase'
@@ -47,19 +47,19 @@ const toBlogPost = (r: BlogRow): BlogPost => ({
 })
 
 // Sem Supabase configurado (só no computador de quem desenvolve), o blog mostra o post de exemplo.
-const DEMO_POST: BlogPost = {
-  id: 0,
-  slug: demoPost.slug,
-  title: demoPost.title,
-  summary: demoPost.summary,
-  category: demoPost.category,
-  content: demoPost.content.join('\n'),
-  authorName: demoPost.author,
+const DEMO_POSTS: BlogPost[] = demoPosts.map((p, i) => ({
+  id: -(i + 1),
+  slug: p.slug,
+  title: p.title,
+  summary: p.summary,
+  category: p.category,
+  content: p.content.join('\n'),
+  authorName: p.author,
   published: true,
-  publishedAt: demoPost.publishedAt,
-  createdAt: demoPost.publishedAt,
+  publishedAt: p.publishedAt,
+  createdAt: p.publishedAt,
   demo: true,
-}
+}))
 
 interface SubscriptionRow {
   id: number
@@ -189,12 +189,12 @@ interface ResgateRow {
 export const api = {
   blog: {
     list: async (): Promise<BlogPost[]> => {
-      if (!supabaseReady) return [DEMO_POST]
+      if (!supabaseReady) return DEMO_POSTS
       const rows = await run(supabase.from('blog_posts').select('*').order('published_at', { ascending: false, nullsFirst: true }))
       return (rows as BlogRow[]).map(toBlogPost)
     },
     getBySlug: async (slug: string): Promise<BlogPost | null> => {
-      if (!supabaseReady) return slug === DEMO_POST.slug ? DEMO_POST : null
+      if (!supabaseReady) return DEMO_POSTS.find((p) => p.slug === slug) ?? null
       const rows = (await run(supabase.from('blog_posts').select('*').eq('slug', slug).limit(1))) as BlogRow[]
       return rows[0] ? toBlogPost(rows[0]) : null
     },
