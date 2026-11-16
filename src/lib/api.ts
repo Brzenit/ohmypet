@@ -1,6 +1,7 @@
 import type { PostgrestError } from '@supabase/supabase-js'
+import demoPost from '../data/blog-exemplo.json'
 import { completeDetails } from '../data/petOptions'
-import type { PatinhasGanho, PatinhasMovimento, PatinhasResgate, Pet, PetDetails, PetLook, RewardId, Subscription } from '../types'
+import type { BlogDraft, BlogPost, PatinhasGanho, PatinhasMovimento, PatinhasResgate, Pet, PetDetails, PetLook, RewardId, Subscription } from '../types'
 import { supabase, supabaseReady } from './supabase'
 
 const OFFLINE = 'Não conseguimos falar com o servidor. Tente de novo em instantes.'
@@ -17,6 +18,47 @@ interface PetRow {
   look: PetLook
   details: Partial<PetDetails> | null
   photo_path?: string | null
+}
+
+interface BlogRow {
+  id: number
+  slug: string
+  title: string
+  summary: string
+  category: string
+  content: string
+  author_name: string
+  published: boolean
+  published_at: string | null
+  created_at: string
+}
+
+const toBlogPost = (r: BlogRow): BlogPost => ({
+  id: r.id,
+  slug: r.slug,
+  title: r.title,
+  summary: r.summary,
+  category: r.category,
+  content: r.content,
+  authorName: r.author_name,
+  published: r.published,
+  publishedAt: r.published_at,
+  createdAt: r.created_at,
+})
+
+// Sem Supabase configurado (só no computador de quem desenvolve), o blog mostra o post de exemplo.
+const DEMO_POST: BlogPost = {
+  id: 0,
+  slug: demoPost.slug,
+  title: demoPost.title,
+  summary: demoPost.summary,
+  category: demoPost.category,
+  content: demoPost.content.join('\n'),
+  authorName: demoPost.author,
+  published: true,
+  publishedAt: demoPost.publishedAt,
+  createdAt: demoPost.publishedAt,
+  demo: true,
 }
 
 interface SubscriptionRow {
@@ -145,6 +187,55 @@ interface ResgateRow {
 }
 
 export const api = {
+  blog: {
+    list: async (): Promise<BlogPost[]> => {
+      if (!supabaseReady) return [DEMO_POST]
+      const rows = await run(supabase.from('blog_posts').select('*').order('published_at', { ascending: false, nullsFirst: true }))
+      return (rows as BlogRow[]).map(toBlogPost)
+    },
+    getBySlug: async (slug: string): Promise<BlogPost | null> => {
+      if (!supabaseReady) return slug === DEMO_POST.slug ? DEMO_POST : null
+      const rows = (await run(supabase.from('blog_posts').select('*').eq('slug', slug).limit(1))) as BlogRow[]
+      return rows[0] ? toBlogPost(rows[0]) : null
+    },
+    getById: async (id: number): Promise<BlogPost | null> => {
+      if (!supabaseReady) return null
+      const rows = (await run(supabase.from('blog_posts').select('*').eq('id', id).limit(1))) as BlogRow[]
+      return rows[0] ? toBlogPost(rows[0]) : null
+    },
+    /** Só administradores (tabela blog_admins) publicam; o banco confere de novo a cada gravação. */
+    isAdmin: async (): Promise<boolean> => (supabaseReady ? Boolean(await rpc<boolean>('is_blog_admin')) : false),
+    save: async (post: BlogDraft, id?: number): Promise<BlogPost> => {
+      if (!supabaseReady) throw new Error(OFFLINE)
+      const row = {
+        slug: post.slug,
+        title: post.title,
+        summary: post.summary,
+        category: post.category,
+        content: post.content,
+        author_name: post.authorName,
+        published: post.published,
+      }
+      let result: { data: BlogRow | null; error: PostgrestError | null }
+      try {
+        result = await (id ? supabase.from('blog_posts').update(row).eq('id', id).select().single() : supabase.from('blog_posts').insert(row).select().single())
+      } catch {
+        throw new Error(OFFLINE)
+      }
+      if (result.error) {
+        console.error(result.error)
+        if (result.error.code === '23505') throw new Error('Já existe um post com esse endereço. Troque o endereço.')
+        if (result.error.code === '23514') throw new Error('Confira o endereço (só letras minúsculas, números e hífens) e o tamanho dos campos.')
+        if (result.error.code === '42501') throw new Error('Você não tem permissão para publicar no blog.')
+        throw new Error(OFFLINE)
+      }
+      return toBlogPost(result.data as BlogRow)
+    },
+    remove: async (id: number) => {
+      await run(supabase.from('blog_posts').delete().eq('id', id))
+    },
+  },
+
   /** Envia a foto do pet real para o bucket privado e devolve o caminho dela. */
   uploadPetPhoto: async (userId: string, petId: number, photo: Blob) => {
     if (!supabaseReady) throw new Error(OFFLINE)

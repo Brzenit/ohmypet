@@ -179,7 +179,7 @@ function Footer() {
               <h4>INSTITUCIONAL</h4>
               <Link className="link-rodape" to="/quem-somos">Quem somos nós</Link>
               <Link className="link-rodape" to="/ongs">Tudo sobre ONG’s</Link>
-              <SoonLink>Blog</SoonLink>
+              <Link className="link-rodape" to="/blog">Blog</Link>
               <SoonLink>Trabalhe conosco</SoonLink>
             </div>
             <div>

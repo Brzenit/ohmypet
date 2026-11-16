@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Layout } from './components/Layout'
 import { useAuth } from './lib/auth'
 import { Account } from './pages/Account'
+import { BlogEditor, BlogList, BlogPostPage } from './pages/Blog'
 import { About, NotFound, Ongs } from './pages/Content'
 import { CreatePet } from './pages/CreatePet'
 import { Home } from './pages/Home'
@@ -28,6 +29,10 @@ export function App() {
         <Route path="crie-seu-pet" element={<CreatePet />} />
         <Route path="brincar" element={<Play />} />
         <Route path="patinhas" element={<Patinhas />} />
+        <Route path="blog" element={<BlogList />} />
+        <Route path="blog/novo" element={<BlogEditor />} />
+        <Route path="blog/editar/:id" element={<BlogEditor />} />
+        <Route path="blog/:slug" element={<BlogPostPage />} />
         <Route path="ongs" element={<Ongs />} />
         <Route path="quem-somos" element={<About />} />
         <Route path="termos" element={<Terms />} />

@@ -1,0 +1,243 @@
+.blog-topo h1 {
+  font-size: clamp(34px, 6vw, 72px);
+}
+.blog-topo-post h1 {
+  font-size: clamp(26px, 4.4vw, 52px);
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.1;
+}
+.blog-categoria {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 4px 16px;
+  background: var(--amarelo);
+  color: var(--roxo);
+  border: 2px solid var(--roxo);
+  border-radius: 99px;
+  font-weight: 900;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Lista */
+.blog-lista,
+.blog-editor,
+.blog-artigo {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+.blog-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 12px 18px;
+  border: 2px dashed var(--roxo);
+  border-radius: 16px;
+  font-weight: 800;
+}
+.blog-demo {
+  margin: 0 0 24px;
+  padding: 10px 14px;
+  background: var(--amarelo);
+  border: 2px solid var(--roxo);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.blog-vazio {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 40px;
+  text-align: center;
+  font-weight: 800;
+}
+.blog-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+.blog-cartao {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+}
+.blog-capa {
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  min-height: 150px;
+  background: var(--cor);
+  border-bottom: 2px solid var(--roxo);
+  color: var(--roxo);
+}
+.blog-capa span {
+  font-weight: 900;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.blog-corpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 20px 22px 22px;
+}
+.blog-corpo h2 {
+  font-size: 24px;
+  line-height: 1.15;
+}
+.blog-corpo h2 a:hover {
+  text-decoration: underline;
+}
+.blog-corpo p {
+  flex: 1;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.blog-corpo small {
+  font-weight: 700;
+  opacity: 0.75;
+}
+.blog-ler {
+  font-weight: 900;
+  text-decoration: underline;
+}
+.blog-carregando {
+  text-align: center;
+  font-weight: 800;
+}
+
+/* Post */
+.blog-artigo-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 760px;
+  margin: 0 auto 28px;
+}
+.artigo {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: clamp(17px, 1.5vw, 19px);
+  font-weight: 600;
+  line-height: 1.7;
+}
+.artigo h2 {
+  margin: 40px 0 12px;
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1.15;
+}
+.artigo h3 {
+  margin: 28px 0 8px;
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1.2;
+}
+.artigo p {
+  margin: 0 0 16px;
+}
+.artigo ul,
+.artigo ol {
+  margin: 0 0 18px;
+  padding-left: 26px;
+  display: grid;
+  gap: 8px;
+}
+.artigo a {
+  text-decoration: underline;
+  font-weight: 800;
+}
+.artigo blockquote {
+  margin: 24px 0;
+  padding: 18px 22px;
+  background: var(--amarelo);
+  border: 2px solid var(--roxo);
+  border-radius: 18px;
+  box-shadow: 6px 6px 0 var(--roxo);
+  font-weight: 800;
+}
+.artigo hr {
+  margin: 32px 0;
+  border: 0;
+  border-top: 3px dashed var(--roxo);
+}
+.blog-chamada {
+  max-width: 760px;
+  margin: 48px auto 0;
+  padding: clamp(20px, 3vw, 32px);
+  background: var(--rosa);
+  text-align: center;
+}
+.blog-chamada h2 {
+  font-size: clamp(24px, 3vw, 34px);
+}
+.blog-chamada p {
+  margin: 10px 0 18px;
+  font-weight: 700;
+}
+.blog-chamada-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+/* Editor */
+.blog-form {
+  display: grid;
+  gap: 22px;
+  padding: clamp(18px, 3vw, 32px);
+}
+.blog-form-grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.blog-form-grade .inteiro {
+  grid-column: 1 / -1;
+}
+.blog-texto {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  align-items: start;
+}
+.blog-markdown {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5;
+  resize: vertical;
+}
+.blog-previa {
+  max-width: none;
+  max-height: 480px;
+  overflow: auto;
+  padding: 14px 18px;
+  border: 2px solid var(--roxo);
+  border-radius: 14px;
+  background: #fff;
+  font-size: 15px;
+}
+.blog-previa h2 {
+  margin-top: 8px;
+}
+.blog-perigo {
+  text-align: center;
+}
+@media (max-width: 860px) {
+  .blog-form-grade,
+  .blog-texto {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

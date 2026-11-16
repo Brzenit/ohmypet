@@ -69,6 +69,33 @@ export interface Pet extends PetProfile {
   photoPath?: string
 }
 
+export interface BlogPost {
+  id: number
+  slug: string
+  title: string
+  summary: string
+  category: string
+  /** Markdown simples (ver components/Markdown.tsx). */
+  content: string
+  authorName: string
+  published: boolean
+  publishedAt: string | null
+  createdAt: string
+  /** Post de exemplo mostrado quando o site está sem banco (só no computador de quem desenvolve). */
+  demo?: boolean
+}
+
+/** Os campos que quem publica preenche. */
+export interface BlogDraft {
+  slug: string
+  title: string
+  summary: string
+  category: string
+  content: string
+  authorName: string
+  published: boolean
+}
+
 export type PatinhasTipo = 'banho' | 'sequencia' | 'pet' | 'assinatura' | 'resgate' | 'expiracao'
 export type RewardId = 'mimo' | 'desc5' | 'desc10' | 'frete' | 'ong'
 
